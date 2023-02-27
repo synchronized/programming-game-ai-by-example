@@ -2,9 +2,9 @@
 #define GAME_ENTITY_FUNCTION_TEMPLATES
 
 #include "BaseGameEntity.h"
-#include "2d/geometry.h"
+#include "2d/Geometry.h"
 
-
+#include <list>
 
 //////////////////////////////////////////////////////////////////////////
 //
@@ -25,7 +25,7 @@ bool Overlapped(const T* ob, const conT& conOb, double MinDistBetweenObstacles =
   for (it=conOb.begin(); it != conOb.end(); ++it)
   {
     if (TwoCirclesOverlapped(ob->Pos(),
-                             ob->BRadius()+MinDistBetweenObstacles,                             
+                             ob->BRadius()+MinDistBetweenObstacles,
                              (*it)->Pos(),
                              (*it)->BRadius()))
     {
@@ -51,10 +51,10 @@ void TagNeighbors(const T& entity, conT& ContainerOfEntities, double radius)
   {
     //first clear any current tag
     (*curEntity)->UnTag();
-    
+
     Vector2D to = (*curEntity)->Pos() - entity->Pos();
 
-    //the bounding radius of the other is taken into account by adding it 
+    //the bounding radius of the other is taken into account by adding it
     //to the range
     double range = radius + (*curEntity)->BRadius();
 
@@ -64,7 +64,7 @@ void TagNeighbors(const T& entity, conT& ContainerOfEntities, double radius)
     {
       (*curEntity)->Tag();
     }
-    
+
   }//next entity
 }
 
@@ -77,7 +77,7 @@ void TagNeighbors(const T& entity, conT& ContainerOfEntities, double radius)
 //  other
 //------------------------------------------------------------------------
 template <class T, class conT>
-void EnforceNonPenetrationConstraint(const T&    entity, 
+void EnforceNonPenetrationConstraint(const T&    entity,
                                     const conT& ContainerOfEntities)
 {
   //iterate through all entities checking for any overlap of bounding radii
@@ -95,7 +95,7 @@ void EnforceNonPenetrationConstraint(const T&    entity,
 
     //if this distance is smaller than the sum of their radii then this
     //entity must be moved away in the direction parallel to the
-    //ToEntity vector   
+    //ToEntity vector
     double AmountOfOverLap = (*curEntity)->BRadius() + entity->BRadius() -
                              DistFromEachOther;
 
@@ -114,7 +114,7 @@ void EnforceNonPenetrationConstraint(const T&    entity,
 //-------------------- GetEntityLineSegmentIntersections ----------------------
 //
 //  tests a line segment AB against a container of entities. First of all
-//  a test is made to confirm that the entity is within a specified range of 
+//  a test is made to confirm that the entity is within a specified range of
 //  the one_to_ignore (positioned at A). If within range the intersection test
 //  is made.
 //
@@ -157,7 +157,7 @@ std::list<T> GetEntityLineSegmentIntersections(const conT& entities,
 //------------------------ GetClosestEntityLineSegmentIntersection ------------
 //
 //  tests a line segment AB against a container of entities. First of all
-//  a test is made to confirm that the entity is within a specified range of 
+//  a test is made to confirm that the entity is within a specified range of
 //  the one_to_ignore (positioned at A). If within range the intersection test
 //  is made.
 //

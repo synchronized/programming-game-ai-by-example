@@ -2,8 +2,9 @@
 #include "State.h"
 #include "Miner.h"
 #include "Locations.h"
-#include "misc/ConsoleUtils.h"
 #include "EntityNames.h"
+
+#include "misc/ConsoleUtils.h"
 
 #include <iostream>
 using std::cout;

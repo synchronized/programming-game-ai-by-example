@@ -15,13 +15,13 @@
 #include <windows.h>
 #include <vector>
 
-#include "2d/Vector2D.h"
-#include "time/PrecisionTimer.h"
-#include "misc/CellSpacePartition.h"
 #include "BaseGameEntity.h"
 #include "EntityFunctionTemplates.h"
-#include "vehicle.h"
+#include "Vehicle.h"
 
+#include "2d/Vector2D.h"
+#include "misc/CellSpacePartition.h"
+#include "time/PrecisionTimer.h"
 
 class Obstacle;
 class Wall2D;
@@ -32,7 +32,7 @@ typedef std::vector<BaseGameEntity*>::iterator  ObIt;
 
 
 class GameWorld
-{ 
+{
 private:
 
   //a container of all the moving entities
@@ -80,10 +80,10 @@ private:
 
   void CreateWalls();
 
-  
+
 
 public:
-  
+
   GameWorld(int cx, int cy);
 
   ~GameWorld();
@@ -105,7 +105,7 @@ public:
     TagNeighbors(pVehicle, m_Obstacles, range);
   }
 
-  const std::vector<Wall2D>&          Walls(){return m_Walls;}                          
+  const std::vector<Wall2D>&          Walls(){return m_Walls;}
   CellSpacePartition<Vehicle*>*       CellSpace(){return m_pCellSpace;}
   const std::vector<BaseGameEntity*>& Obstacles()const{return m_Obstacles;}
   const std::vector<Vehicle*>&        Agents(){return m_Vehicles;}
@@ -114,7 +114,7 @@ public:
   //handle WM_COMMAND messages
   void        HandleKeyPresses(WPARAM wParam);
   void        HandleMenuItems(WPARAM wParam, HWND hwnd);
-  
+
   void        TogglePause(){m_bPaused = !m_bPaused;}
   bool        Paused()const{return m_bPaused;}
 
@@ -124,7 +124,7 @@ public:
 
   int   cxClient()const{return m_cxClient;}
   int   cyClient()const{return m_cyClient;}
- 
+
   bool  RenderWalls()const{return m_bShowWalls;}
   bool  RenderObstacles()const{return m_bShowObstacles;}
   bool  RenderPath()const{return m_bShowPath;}
@@ -135,10 +135,10 @@ public:
 
   bool  RenderFPS()const{return m_bShowFPS;}
   void  ToggleShowFPS(){m_bShowFPS = !m_bShowFPS;}
-  
+
   void  ToggleRenderNeighbors(){m_bRenderNeighbors = !m_bRenderNeighbors;}
   bool  RenderNeighbors()const{return m_bRenderNeighbors;}
-  
+
   void  ToggleViewKeys(){m_bViewKeys = !m_bViewKeys;}
   bool  ViewKeys()const{return m_bViewKeys;}
 

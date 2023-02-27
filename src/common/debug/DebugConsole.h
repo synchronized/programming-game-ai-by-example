@@ -22,7 +22,7 @@
 #include <iosfwd>
 #include <fstream>
 
-#include "misc/utils.h"
+#include "misc/Utils.h"
 #include "misc/WindowUtils.h"
 
 
@@ -126,7 +126,7 @@ class DebugConsole {
 
     static void flush() {
         if (!m_bDestroyed) {
-            m_bFlushed = true; SendMessage(m_hwnd, UM_SETSCROLL, NULL, NULL);
+            m_bFlushed = true; SendMessage(m_hwnd, UM_SETSCROLL, 0, 0);
         }
     }
 

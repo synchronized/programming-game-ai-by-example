@@ -24,7 +24,7 @@
 
 #include "2d/Vector2D.h"
 #include "2d/InvertedAABBox2D.h"
-#include "misc/utils.h"
+#include "misc/Utils.h"
 
 
 
@@ -167,7 +167,7 @@ void CellSpacePartition<entity>::CalculateNeighbors(Vector2D TargetPos,
                                                     double   QueryRadius)
 {
     //create an iterator and set it to the beginning of the neighbor vector
-    std::vector<entity>::iterator curNbor = m_Neighbors.begin();
+    typename std::vector<entity>::iterator curNbor = m_Neighbors.begin();
 
     //create the query box that is the bounding box of the target's query
     //area
@@ -177,7 +177,7 @@ void CellSpacePartition<entity>::CalculateNeighbors(Vector2D TargetPos,
     //iterate through each cell and test to see if its bounding box overlaps
     //with the query box. If it does and it also contains entities then
     //make further proximity tests.
-    std::vector<Cell<entity> >::iterator curCell;
+    typename std::vector<Cell<entity> >::iterator curCell;
     for (curCell=m_Cells.begin(); curCell!=m_Cells.end(); ++curCell)
     {
         //test to see if this cell contains members and if it overlaps the
@@ -186,14 +186,11 @@ void CellSpacePartition<entity>::CalculateNeighbors(Vector2D TargetPos,
             !curCell->Members.empty())
         {
             //add any entities found within query radius to the neighbor list
-            std::list<entity>::iterator it = curCell->Members.begin();
-            for (it; it!=curCell->Members.end(); ++it)
-            {
-                if (Vec2DDistanceSq((*it)->Pos(), TargetPos) <
-                    QueryRadius*QueryRadius)
-                {
-                    *curNbor++ = *it;
-                }
+
+            for (auto it = curCell->Members.begin(); it != curCell->Members.end(); ++it) {
+              if (Vec2DDistanceSq((*it)->Pos(), TargetPos) < QueryRadius * QueryRadius) {
+                *curNbor++ = *it;
+              }
             }
         }
     }//next cell
@@ -210,7 +207,7 @@ void CellSpacePartition<entity>::CalculateNeighbors(Vector2D TargetPos,
 template<class entity>
 void CellSpacePartition<entity>::EmptyCells()
 {
-    std::vector<Cell<entity> >::iterator it = m_Cells.begin();
+    typename std::vector<Cell<entity> >::iterator it = m_Cells.begin();
 
     for (it; it!=m_Cells.end(); ++it)
     {
@@ -276,11 +273,8 @@ inline void CellSpacePartition<entity>::UpdateEntity(const entity&  ent,
 //-------------------------- RenderCells -----------------------------------
 //--------------------------------------------------------------------------
 template<class entity>
-inline void CellSpacePartition<entity>::RenderCells()const
-{
-    std::vector<Cell<entity> >::const_iterator curCell;
-    for (curCell=m_Cells.begin(); curCell!=m_Cells.end(); ++curCell)
-    {
+inline void CellSpacePartition<entity>::RenderCells()const {
+    for (auto curCell=m_Cells.begin(); curCell!=m_Cells.end(); ++curCell) {
         curCell->BBox.Render(false);
     }
 }

@@ -1,11 +1,11 @@
 #include "MinersWifeOwnedStates.h"
-#include "MinerOwnedStates.h"
-#include "MinersWife.h"
+#include "EntityNames.h"
 #include "Locations.h"
-#include "Time/CrudeTimer.h"
 #include "MessageDispatcher.h"
 #include "MessageTypes.h"
-#include "EntityNames.h"
+#include "MinerOwnedStates.h"
+#include "MinersWife.h"
+#include "time/CrudeTimer.h"
 
 #include <iostream>
 using std::cout;
@@ -30,7 +30,7 @@ void WifesGlobalState::Execute(MinersWife* wife)
 {
   //1 in 10 chance of needing the bathroom (provided she is not already
   //in the bathroom)
-  if ( (RandFloat() < 0.1) && 
+  if ( (RandFloat() < 0.1) &&
        !wife->GetFSM()->isInState(*VisitBathroom::Instance()) )
   {
     wife->GetFSM()->ChangeState(VisitBathroom::Instance());
@@ -45,12 +45,12 @@ bool WifesGlobalState::OnMessage(MinersWife* wife, const Telegram& msg)
   {
   case Msg_HiHoneyImHome:
    {
-       cout << "\nMessage handled by " << GetNameOfEntity(wife->ID()) << " at time: " 
+       cout << "\nMessage handled by " << GetNameOfEntity(wife->ID()) << " at time: "
        << Clock->GetCurrentTime();
 
      SetTextColor(FOREGROUND_GREEN|FOREGROUND_INTENSITY);
 
-     cout << "\n" << GetNameOfEntity(wife->ID()) << 
+     cout << "\n" << GetNameOfEntity(wife->ID()) <<
           ": Hi honey. Let me make you some of mah fine country stew";
 
      wife->GetFSM()->ChangeState(CookStew::Instance());
@@ -123,8 +123,8 @@ VisitBathroom* VisitBathroom::Instance()
 
 
 void VisitBathroom::Enter(MinersWife* wife)
-{  
-  cout << "\n" << GetNameOfEntity(wife->ID()) << ": Walkin' to the can. Need to powda mah pretty li'lle nose"; 
+{
+  cout << "\n" << GetNameOfEntity(wife->ID()) << ": Walkin' to the can. Need to powda mah pretty li'lle nose";
 }
 
 
@@ -163,14 +163,14 @@ void CookStew::Enter(MinersWife* wife)
   if (!wife->Cooking())
   {
     cout << "\n" << GetNameOfEntity(wife->ID()) << ": Putting the stew in the oven";
-  
+
     //send a delayed message myself so that I know when to take the stew
     //out of the oven
     Dispatch->DispatchMessage(1.5,                  //time delay
                               wife->ID(),           //sender ID
                               wife->ID(),           //receiver ID
                               Msg_StewReady,        //msg
-                              NO_ADDITIONAL_INFO); 
+                              NO_ADDITIONAL_INFO);
 
     wife->SetCooking(true);
   }
@@ -185,7 +185,7 @@ void CookStew::Execute(MinersWife* wife)
 void CookStew::Exit(MinersWife* wife)
 {
   SetTextColor(FOREGROUND_GREEN|FOREGROUND_INTENSITY);
-  
+
   cout << "\n" << GetNameOfEntity(wife->ID()) << ": Puttin' the stew on the table";
 }
 
@@ -213,7 +213,7 @@ bool CookStew::OnMessage(MinersWife* wife, const Telegram& msg)
 
       wife->SetCooking(false);
 
-      wife->GetFSM()->ChangeState(DoHouseWork::Instance());               
+      wife->GetFSM()->ChangeState(DoHouseWork::Instance());
     }
 
     return true;

@@ -1,4 +1,4 @@
-#include "misc/iniFileLoaderBase.h"
+#include "misc/IniFileLoaderBase.h"
 using std::string;
 
 

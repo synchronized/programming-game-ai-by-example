@@ -10,7 +10,7 @@ message("CMAKE_TOOLCHAIN_FILE: ${CMAKE_TOOLCHAIN_FILE}")
 
 add_subdirectory(src/common)
 add_subdirectory(src/chapter2-state-machines)
-# add_subdirectory(src/chapter3-steering-behaviors)
+add_subdirectory(src/chapter3-steering-behaviors)
 # add_subdirectory(src/chapter4-simple-soccer)
 # add_subdirectory(src/chapter5-pathfinder)
 # add_subdirectory(src/chapter6_scripting_source)

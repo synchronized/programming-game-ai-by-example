@@ -73,7 +73,7 @@ LRESULT CALLBACK DebugConsole::DebugWindowProc(HWND hwnd,
                 switch(wparam) {
                     case VK_ESCAPE:
                         {
-                            SendMessage(hwnd, WM_DESTROY, NULL, NULL);
+                            SendMessage(hwnd, WM_DESTROY, 0, 0);
                         }
 
                         break;
@@ -232,7 +232,7 @@ LRESULT CALLBACK DebugConsole::DebugWindowProc(HWND hwnd,
         return DefWindowProc(hwnd, msg, wparam, lparam);
     }
     else {
-        return NULL;
+        return 0;
     }
 
 }
@@ -334,5 +334,5 @@ void DebugConsole::WriteAndResetBuffer() {
 
     m_Buffer.clear();
 
-    SendMessage(m_hwnd, UM_SETSCROLL, NULL, NULL);
+    SendMessage(m_hwnd, UM_SETSCROLL, 0, 0);
 }

@@ -12,16 +12,14 @@
 
 #include <string>
 
-#include "fsm/State.h"
 #include "BaseGameEntity.h"
 #include "Locations.h"
-#include "MinersWifeOwnedStates.h"
-#include "misc/ConsoleUtils.h"
 #include "Miner.h"
+#include "MinersWifeOwnedStates.h"
+#include "fsm/State.h"
 #include "fsm/StateMachine.h"
+#include "misc/ConsoleUtils.h"
 #include "misc/Utils.h"
-
-
 
 class MinersWife : public BaseGameEntity
 {
@@ -41,7 +39,7 @@ public:
   MinersWife(int id):m_Location(shack),
                      m_bCooking(false),
                      BaseGameEntity(id)
-                                        
+
   {
     //set up the state machine
     m_pStateMachine = new StateMachine<MinersWife>(this);
@@ -68,7 +66,7 @@ public:
 
   bool          Cooking()const{return m_bCooking;}
   void          SetCooking(bool val){m_bCooking = val;}
-   
+
 };
 
 #endif

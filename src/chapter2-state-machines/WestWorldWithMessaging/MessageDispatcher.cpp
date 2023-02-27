@@ -1,10 +1,11 @@
 #include "MessageDispatcher.h"
 #include "BaseGameEntity.h"
-#include "Time/CrudeTimer.h"
 #include "EntityManager.h"
 #include "Locations.h"
 #include "MessageTypes.h"
 #include "EntityNames.h"
+
+#include "time/CrudeTimer.h"
 
 #include <iostream>
 using std::cout;
@@ -30,7 +31,7 @@ MessageDispatcher* MessageDispatcher::Instance()
 
 
 //----------------------------- Dispatch ---------------------------------
-//  
+//
 //  see description in header
 //------------------------------------------------------------------------
 void MessageDispatcher::Discharge(BaseGameEntity* pReceiver,
@@ -68,15 +69,15 @@ void MessageDispatcher::DispatchMessage(double  delay,
 
     return;
   }
-  
+
   //create the telegram
   Telegram telegram(0, sender, receiver, msg, ExtraInfo);
-  
-  //if there is no delay, route telegram immediately                       
-  if (delay <= 0.0f)                                                        
+
+  //if there is no delay, route telegram immediately
+  if (delay <= 0.0f)
   {
     cout << "\nInstant telegram dispatched at time: " << Clock->GetCurrentTime()
-         << " by " << GetNameOfEntity(pSender->ID()) << " for " << GetNameOfEntity(pReceiver->ID()) 
+         << " by " << GetNameOfEntity(pSender->ID()) << " for " << GetNameOfEntity(pReceiver->ID())
          << ". Msg is "<< MsgToStr(msg);
 
     //send the telegram to the recipient
@@ -86,17 +87,17 @@ void MessageDispatcher::DispatchMessage(double  delay,
   //else calculate the time when the telegram should be dispatched
   else
   {
-    double CurrentTime = Clock->GetCurrentTime(); 
+    double CurrentTime = Clock->GetCurrentTime();
 
     telegram.DispatchTime = CurrentTime + delay;
 
     //and put it in the queue
-    PriorityQ.insert(telegram);   
+    PriorityQ.insert(telegram);
 
-    cout << "\nDelayed telegram from " << GetNameOfEntity(pSender->ID()) << " recorded at time " 
+    cout << "\nDelayed telegram from " << GetNameOfEntity(pSender->ID()) << " recorded at time "
             << Clock->GetCurrentTime() << " for " << GetNameOfEntity(pReceiver->ID())
             << ". Msg is "<< MsgToStr(msg);
-            
+
   }
 }
 
@@ -109,7 +110,7 @@ void MessageDispatcher::DispatchMessage(double  delay,
 void MessageDispatcher::DispatchDelayedMessages()
 {
   SetTextColor(BACKGROUND_RED|FOREGROUND_RED|FOREGROUND_GREEN|FOREGROUND_BLUE);
-  
+
   //get current time
   double CurrentTime = Clock->GetCurrentTime();
 
@@ -117,7 +118,7 @@ void MessageDispatcher::DispatchDelayedMessages()
   //remove all telegrams from the front of the queue that have gone
   //past their sell by date
   while( !PriorityQ.empty() &&
-         (PriorityQ.begin()->DispatchTime < CurrentTime) && 
+         (PriorityQ.begin()->DispatchTime < CurrentTime) &&
          (PriorityQ.begin()->DispatchTime > 0) )
   {
     //read the telegram from the front of the queue
@@ -126,7 +127,7 @@ void MessageDispatcher::DispatchDelayedMessages()
     //find the recipient
     BaseGameEntity* pReceiver = EntityMgr->GetEntityFromID(telegram.Receiver);
 
-    cout << "\nQueued telegram ready for dispatch: Sent to " 
+    cout << "\nQueued telegram ready for dispatch: Sent to "
          << GetNameOfEntity(pReceiver->ID()) << ". Msg is " << MsgToStr(telegram.Msg);
 
     //send the telegram to the recipient
@@ -136,6 +137,3 @@ void MessageDispatcher::DispatchDelayedMessages()
     PriorityQ.erase(PriorityQ.begin());
   }
 }
-
-
-

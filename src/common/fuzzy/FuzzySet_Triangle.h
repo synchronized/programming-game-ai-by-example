@@ -11,7 +11,7 @@
 //          right displacement.
 //-----------------------------------------------------------------------------
 #include "fuzzy/FuzzySet.h"
-#include "misc/utils.h"
+#include "misc/Utils.h"
 
 
 

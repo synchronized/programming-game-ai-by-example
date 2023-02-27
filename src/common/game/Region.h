@@ -15,7 +15,7 @@
 
 #include "2D/Vector2D.h"
 #include "misc/Cgdi.h"
-#include "misc/utils.h"
+#include "misc/Utils.h"
 #include "misc/Stream_Utility_Functions.h"
 
 

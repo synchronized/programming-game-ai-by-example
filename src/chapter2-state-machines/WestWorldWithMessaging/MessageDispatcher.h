@@ -23,7 +23,8 @@ class BaseGameEntity;
 
 //to make code easier to read
 const double SEND_MSG_IMMEDIATELY = 0.0f;
-const int   NO_ADDITIONAL_INFO   = 0;
+//const int   NO_ADDITIONAL_INFO   = 0;
+#define NO_ADDITIONAL_INFO NULL
 
 //to make life easier...
 #define Dispatch MessageDispatcher::Instance()
@@ -31,8 +32,8 @@ const int   NO_ADDITIONAL_INFO   = 0;
 
 class MessageDispatcher
 {
-private:  
-  
+private:
+
   //a std::set is used as the container for the delayed messages
   //because of the benefit of automatic sorting and avoidance
   //of duplicates. Messages are sorted by their dispatch time.
@@ -61,7 +62,7 @@ public:
                        int    msg,
                        void*  ExtraInfo);
 
-  //send out any delayed messages. This method is called each time through   
+  //send out any delayed messages. This method is called each time through
   //the main game loop.
   void DispatchDelayedMessages();
 };

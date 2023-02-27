@@ -1,11 +1,12 @@
 #include "Vehicle.h"
+#include "GameWorld.h"
+#include "SteeringBehaviors.h"
+
 #include "2d/C2DMatrix.h"
 #include "2d/Geometry.h"
-#include "SteeringBehaviors.h"
 #include "2d/Transformations.h"
-#include "GameWorld.h"
 #include "misc/CellSpacePartition.h"
-#include "misc/cgdi.h"
+#include "misc/Cgdi.h"
 
 using std::vector;
 using std::list;
@@ -35,16 +36,16 @@ Vehicle::Vehicle(GameWorld* world,
                                        m_vSmoothedHeading(Vector2D(0,0)),
                                        m_bSmoothingOn(false),
                                        m_dTimeElapsed(0.0)
-{  
+{
   InitializeBuffer();
 
   //set up the steering behavior class
-  m_pSteering = new SteeringBehavior(this);    
+  m_pSteering = new SteeringBehavior(this);
 
   //set up the smoother
-  m_pHeadingSmoother = new Smoother<Vector2D>(Prm.NumSamplesForSmoothing, Vector2D(0.0, 0.0)); 
-  
- 
+  m_pHeadingSmoother = new Smoother<Vector2D>(Prm.NumSamplesForSmoothing, Vector2D(0.0, 0.0));
+
+
 }
 
 
@@ -61,7 +62,7 @@ Vehicle::~Vehicle()
 //  Updates the vehicle's position from a series of steering behaviors
 //------------------------------------------------------------------------
 void Vehicle::Update(double time_elapsed)
-{    
+{
   //update the time elapsed
   m_dTimeElapsed = time_elapsed;
 
@@ -72,15 +73,15 @@ void Vehicle::Update(double time_elapsed)
 
   Vector2D SteeringForce;
 
-  //calculate the combined force from each steering behavior in the 
+  //calculate the combined force from each steering behavior in the
   //vehicle's list
   SteeringForce = m_pSteering->Calculate();
-    
+
   //Acceleration = Force/Mass
   Vector2D acceleration = SteeringForce / m_dMass;
 
   //update velocity
-  m_vVelocity += acceleration * time_elapsed; 
+  m_vVelocity += acceleration * time_elapsed;
 
   //make sure vehicle does not exceed maximum velocity
   m_vVelocity.Truncate(m_dMaxSpeed);
@@ -90,7 +91,7 @@ void Vehicle::Update(double time_elapsed)
 
   //update the heading if the vehicle has a non zero velocity
   if (m_vVelocity.LengthSq() > 0.00000001)
-  {    
+  {
     m_vHeading = Vec2DNormalize(m_vVelocity);
 
     m_vSide = m_vHeading.Perp();
@@ -117,7 +118,7 @@ void Vehicle::Update(double time_elapsed)
 //-------------------------------- Render -------------------------------------
 //-----------------------------------------------------------------------------
 void Vehicle::Render()
-{ 
+{
   //a vector to hold the transformed vertices
   static std::vector<Vector2D>  m_vecVehicleVBTrans;
 
@@ -145,7 +146,7 @@ void Vehicle::Render()
   }
 
   if (isSmoothingOn())
-  { 
+  {
     m_vecVehicleVBTrans = WorldTransform(m_vecVehicleVB,
                                          Pos(),
                                          SmoothedHeading(),
@@ -164,7 +165,7 @@ void Vehicle::Render()
 
 
   gdi->ClosedShape(m_vecVehicleVBTrans);
- 
+
   //render any visual aids / and or user options
   if (m_pWorld->ViewKeys())
   {

@@ -1,12 +1,13 @@
 #include "MinerOwnedStates.h"
-#include "fsm/State.h"
 #include "Miner.h"
 #include "Locations.h"
-#include "messaging/Telegram.h"
 #include "MessageDispatcher.h"
 #include "MessageTypes.h"
-#include "Time/CrudeTimer.h"
 #include "EntityNames.h"
+
+#include "fsm/State.h"
+#include "time/CrudeTimer.h"
+#include "messaging/Telegram.h"
 
 #include <iostream>
 using std::cout;
@@ -42,7 +43,7 @@ void EnterMineAndDigForNugget::Enter(Miner* pMiner)
 
 
 void EnterMineAndDigForNugget::Execute(Miner* pMiner)
-{  
+{
   //Now the miner is at the goldmine he digs for gold until he
   //is carrying in excess of MaxNuggets. If he gets thirsty during
   //his digging he packs up work for a while and changes state to
@@ -68,7 +69,7 @@ void EnterMineAndDigForNugget::Execute(Miner* pMiner)
 
 void EnterMineAndDigForNugget::Exit(Miner* pMiner)
 {
-  cout << "\n" << GetNameOfEntity(pMiner->ID()) << ": " 
+  cout << "\n" << GetNameOfEntity(pMiner->ID()) << ": "
        << "Ah'm leavin' the goldmine with mah pockets full o' sweet gold";
 }
 
@@ -89,7 +90,7 @@ VisitBankAndDepositGold* VisitBankAndDepositGold::Instance()
 }
 
 void VisitBankAndDepositGold::Enter(Miner* pMiner)
-{  
+{
   //on entry the miner makes sure he is located at the bank
   if (pMiner->Location() != bank)
   {
@@ -104,23 +105,23 @@ void VisitBankAndDepositGold::Execute(Miner* pMiner)
 {
   //deposit the gold
   pMiner->AddToWealth(pMiner->GoldCarried());
-    
+
   pMiner->SetGoldCarried(0);
 
-  cout << "\n" << GetNameOfEntity(pMiner->ID()) << ": " 
+  cout << "\n" << GetNameOfEntity(pMiner->ID()) << ": "
        << "Depositing gold. Total savings now: "<< pMiner->Wealth();
 
   //wealthy enough to have a well earned rest?
   if (pMiner->Wealth() >= ComfortLevel)
   {
-    cout << "\n" << GetNameOfEntity(pMiner->ID()) << ": " 
+    cout << "\n" << GetNameOfEntity(pMiner->ID()) << ": "
          << "WooHoo! Rich enough for now. Back home to mah li'lle lady";
-      
-    pMiner->GetFSM()->ChangeState(GoHomeAndSleepTilRested::Instance());      
+
+    pMiner->GetFSM()->ChangeState(GoHomeAndSleepTilRested::Instance());
   }
 
   //otherwise get more gold
-  else 
+  else
   {
     pMiner->GetFSM()->ChangeState(EnterMineAndDigForNugget::Instance());
   }
@@ -153,39 +154,39 @@ void GoHomeAndSleepTilRested::Enter(Miner* pMiner)
   {
     cout << "\n" << GetNameOfEntity(pMiner->ID()) << ": " << "Walkin' home";
 
-    pMiner->ChangeLocation(shack); 
+    pMiner->ChangeLocation(shack);
 
     //let the wife know I'm home
     Dispatch->DispatchMessage(SEND_MSG_IMMEDIATELY, //time delay
                               pMiner->ID(),        //ID of sender
                               ent_Elsa,            //ID of recipient
                               Msg_HiHoneyImHome,   //the message
-                              NO_ADDITIONAL_INFO);    
+                              NO_ADDITIONAL_INFO);
   }
 }
 
 void GoHomeAndSleepTilRested::Execute(Miner* pMiner)
-{ 
+{
   //if miner is not fatigued start to dig for nuggets again.
   if (!pMiner->Fatigued())
   {
-     cout << "\n" << GetNameOfEntity(pMiner->ID()) << ": " 
+     cout << "\n" << GetNameOfEntity(pMiner->ID()) << ": "
           << "All mah fatigue has drained away. Time to find more gold!";
 
      pMiner->GetFSM()->ChangeState(EnterMineAndDigForNugget::Instance());
   }
 
-  else 
+  else
   {
     //sleep
     pMiner->DecreaseFatigue();
 
     cout << "\n" << GetNameOfEntity(pMiner->ID()) << ": " << "ZZZZ... ";
-  } 
+  }
 }
 
 void GoHomeAndSleepTilRested::Exit(Miner* pMiner)
-{ 
+{
 }
 
 
@@ -197,16 +198,16 @@ bool GoHomeAndSleepTilRested::OnMessage(Miner* pMiner, const Telegram& msg)
    {
    case Msg_StewReady:
 
-     cout << "\nMessage handled by " << GetNameOfEntity(pMiner->ID()) 
+     cout << "\nMessage handled by " << GetNameOfEntity(pMiner->ID())
      << " at time: " << Clock->GetCurrentTime();
 
      SetTextColor(FOREGROUND_RED|FOREGROUND_INTENSITY);
 
-     cout << "\n" << GetNameOfEntity(pMiner->ID()) 
+     cout << "\n" << GetNameOfEntity(pMiner->ID())
           << ": Okay Hun, ahm a comin'!";
 
      pMiner->GetFSM()->ChangeState(EatStew::Instance());
-      
+
      return true;
 
    }//end switch
@@ -226,7 +227,7 @@ QuenchThirst* QuenchThirst::Instance()
 void QuenchThirst::Enter(Miner* pMiner)
 {
   if (pMiner->Location() != saloon)
-  {    
+  {
     pMiner->ChangeLocation(saloon);
 
     cout << "\n" << GetNameOfEntity(pMiner->ID()) << ": " << "Boy, ah sure is thusty! Walking to the saloon";
@@ -239,12 +240,12 @@ void QuenchThirst::Execute(Miner* pMiner)
 
   cout << "\n" << GetNameOfEntity(pMiner->ID()) << ": " << "That's mighty fine sippin' liquer";
 
-  pMiner->GetFSM()->ChangeState(EnterMineAndDigForNugget::Instance());  
+  pMiner->GetFSM()->ChangeState(EnterMineAndDigForNugget::Instance());
 }
 
 
 void QuenchThirst::Exit(Miner* pMiner)
-{ 
+{
   cout << "\n" << GetNameOfEntity(pMiner->ID()) << ": " << "Leaving the saloon, feelin' good";
 }
 
@@ -278,7 +279,7 @@ void EatStew::Execute(Miner* pMiner)
 }
 
 void EatStew::Exit(Miner* pMiner)
-{ 
+{
   cout << "\n" << GetNameOfEntity(pMiner->ID()) << ": " << "Thankya li'lle lady. Ah better get back to whatever ah wuz doin'";
 }
 
@@ -288,5 +289,3 @@ bool EatStew::OnMessage(Miner* pMiner, const Telegram& msg)
   //send msg to global message handler
   return false;
 }
-
-

@@ -12,7 +12,7 @@
 #include <math.h>
 #include <vector>
 
-#include "misc/utils.h"
+#include "misc/Utils.h"
 #include "2d/Vector2D.h"
 
 class C2DMatrix {

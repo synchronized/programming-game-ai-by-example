@@ -9,8 +9,8 @@
 //  Desc:   class to parse a parameter file for the steering behavior project
 //-----------------------------------------------------------------------------
 #include "constants.h"
-#include "misc/iniFileLoaderBase.h"
-#include "misc/utils.h"
+#include "misc/IniFileLoaderBase.h"
+#include "misc/Utils.h"
 
 
 
@@ -20,7 +20,7 @@
 class ParamLoader : public iniFileLoaderBase
 {
 private:
-  
+
     ParamLoader():iniFileLoaderBase("params.ini")
   {
     NumAgents               = GetNextParameterInt();
@@ -60,7 +60,7 @@ private:
     WallDetectionFeelerLength=GetNextParameterFloat();
 
     prWallAvoidance         = GetNextParameterFloat();
-    prObstacleAvoidance     = GetNextParameterFloat();  
+    prObstacleAvoidance     = GetNextParameterFloat();
     prSeparation            = GetNextParameterFloat();
     prAlignment             = GetNextParameterFloat();
     prCohesion              = GetNextParameterFloat();
@@ -142,7 +142,7 @@ public:
   double prEvade;
   double prHide;
   double prArrive;
-  
+
 };
 
 

@@ -5,7 +5,7 @@
 #include "fuzzy/FuzzySet_RightShoulder.h"
 #include "fuzzy/FuzzySet_Singleton.h"
 #include "fuzzy/FzSet.h"
-#include "misc/utils.h"
+#include "misc/Utils.h"
 #include <cassert>
 #include <iostream>
 #include <algorithm>

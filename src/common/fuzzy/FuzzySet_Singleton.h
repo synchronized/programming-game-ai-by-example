@@ -10,7 +10,7 @@
 //          over which the DOM is always 1.0)
 //-----------------------------------------------------------------------------
 #include "fuzzy/FuzzySet.h"
-#include "misc/utils.h"
+#include "misc/Utils.h"
 
 
 

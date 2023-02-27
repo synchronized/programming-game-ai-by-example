@@ -51,8 +51,7 @@ class Smoother
         //now to calculate the average of the history list
         T sum = m_ZeroValue;
 
-        std::vector<T>::iterator it = m_History.begin();
-
+        auto it = m_History.begin();
         for (it; it != m_History.end(); ++it)
         {
             sum += *it;

@@ -3,27 +3,28 @@
 #include <windows.h>
 #include <time.h>
 
-#include "constants.h"
-#include "misc/utils.h"
-#include "time/PrecisionTimer.h"
 #include "GameWorld.h"
-#include "misc/Cgdi.h"
 #include "ParamLoader.h"
+#include "constants.h"
 #include "resource.h"
+
+#include "misc/Cgdi.h"
+#include "misc/Utils.h"
 #include "misc/WindowUtils.h"
+#include "time/PrecisionTimer.h"
 
 //--------------------------------- Globals ------------------------------
 //
 //------------------------------------------------------------------------
 
-char* g_szApplicationName = "Steering Behaviors - Another Big Shoal";
-char*	g_szWindowClassName = "MyWindowClass";
+const char* g_szApplicationName = "Steering Behaviors - Another Big Shoal";
+const char*	g_szWindowClassName = "MyWindowClass";
 
 GameWorld* g_GameWorld;
 
 
 //---------------------------- WindowProc ---------------------------------
-//	
+//
 //	This is the callback function which handles all the windows messages
 //-------------------------------------------------------------------------
 
@@ -33,7 +34,7 @@ LRESULT CALLBACK WindowProc (HWND   hwnd,
                              LPARAM lParam)
 {
    //these hold the dimensions of the client window area
-	 static int cxClient, cyClient; 
+	 static int cxClient, cyClient;
 
 	 //used to create the back buffer
    static HDC		hdcBackBuffer;
@@ -42,14 +43,14 @@ LRESULT CALLBACK WindowProc (HWND   hwnd,
 
     switch (msg)
     {
-	
+
 		//A WM_CREATE msg is sent when your application window is first
 		//created
     case WM_CREATE:
       {
          //to get get the size of the client window first we need  to create
          //a RECT and then ask Windows to fill in our RECT structure with
-         //the client window size. Then we assign to cxClient and cyClient 
+         //the client window size. Then we assign to cxClient and cyClient
          //accordingly
 			   RECT rect;
 
@@ -59,9 +60,9 @@ LRESULT CALLBACK WindowProc (HWND   hwnd,
 			   cyClient = rect.bottom;
 
          //seed random number generator
-         srand((unsigned) time(NULL));  
+         srand((unsigned) time(NULL));
 
-         
+
          //---------------create a surface to render to(backbuffer)
 
          //create a memory device context
@@ -74,25 +75,25 @@ LRESULT CALLBACK WindowProc (HWND   hwnd,
                                           cxClient,
                                           cyClient);
 
-			  
+
          //select the bitmap into the memory device context
 			   hOldBitmap = (HBITMAP)SelectObject(hdcBackBuffer, hBitmap);
 
          //don't forget to release the DC
-         ReleaseDC(hwnd, hdc); 
-         
+         ReleaseDC(hwnd, hdc);
+
          g_GameWorld = new GameWorld(cxClient, cyClient);
 
          ChangeMenuState(hwnd, IDR_PRIORITIZED, MFS_CHECKED);
          ChangeMenuState(hwnd, ID_VIEW_FPS, MFS_CHECKED);
-         
+
       }
 
       break;
 
     case WM_COMMAND:
     {
-      g_GameWorld->HandleMenuItems(wParam, hwnd); 
+      g_GameWorld->HandleMenuItems(wParam, hwnd);
     }
 
     break;
@@ -102,7 +103,7 @@ LRESULT CALLBACK WindowProc (HWND   hwnd,
     {
       g_GameWorld->SetCrosshair(MAKEPOINTS(lParam));
     }
-    
+
     break;
 
     case WM_KEYUP:
@@ -110,37 +111,37 @@ LRESULT CALLBACK WindowProc (HWND   hwnd,
         switch(wParam)
         {
            case VK_ESCAPE:
-            {             
-              SendMessage(hwnd, WM_DESTROY, NULL, NULL);
+            {
+              SendMessage(hwnd, WM_DESTROY, 0, 0);
             }
-          
+
             break;
 
           case 'R':
             {
                delete g_GameWorld;
-           
+
                g_GameWorld = new GameWorld(cxClient, cyClient);
             }
 
             break;
-           
+
 
         }//end switch
 
         //handle any others
         g_GameWorld->HandleKeyPresses(wParam);
-        
+
       }//end WM_KEYUP
 
       break;
 
-    
+
     case WM_PAINT:
       {
- 		       
+
          PAINTSTRUCT ps;
-          
+
          BeginPaint (hwnd, &ps);
 
         //fill our backbuffer with white
@@ -150,22 +151,22 @@ LRESULT CALLBACK WindowProc (HWND   hwnd,
                 cxClient,
                 cyClient,
                 NULL,
-                NULL,
-                NULL,
+                0,
+                0,
                 WHITENESS);
 
-         
+
          gdi->StartDrawing(hdcBackBuffer);
-         
+
          g_GameWorld->Render();
 
          gdi->StopDrawing(hdcBackBuffer);
 
-        
+
 
          //now blit backbuffer to front
-			   BitBlt(ps.hdc, 0, 0, cxClient, cyClient, hdcBackBuffer, 0, 0, SRCCOPY); 
-          
+			   BitBlt(ps.hdc, 0, 0, cxClient, cyClient, hdcBackBuffer, 0, 0, SRCCOPY);
+
          EndPaint (hwnd, &ps);
 
       }
@@ -173,7 +174,7 @@ LRESULT CALLBACK WindowProc (HWND   hwnd,
       break;
 
 
-          
+
 		 case WM_DESTROY:
 			 {
 
@@ -181,11 +182,11 @@ LRESULT CALLBACK WindowProc (HWND   hwnd,
          SelectObject(hdcBackBuffer, hOldBitmap);
 
          DeleteDC(hdcBackBuffer);
-         DeleteObject(hBitmap); 
+         DeleteObject(hBitmap);
 
-         
-         
-         // kill the application, this sends a WM_QUIT message  
+
+
+         // kill the application, this sends a WM_QUIT message
 				 PostQuitMessage (0);
 			 }
 
@@ -193,7 +194,7 @@ LRESULT CALLBACK WindowProc (HWND   hwnd,
 
      }//end switch
 
-     //this is where all the messages not specifically handled by our 
+     //this is where all the messages not specifically handled by our
 		 //winproc are sent to be processed
 		 return DefWindowProc (hwnd, msg, wParam, lParam);
 }
@@ -204,15 +205,15 @@ LRESULT CALLBACK WindowProc (HWND   hwnd,
 //------------------------------------------------------------------------
 int WINAPI WinMain (HINSTANCE hInstance,
                     HINSTANCE hPrevInstance,
-                    LPSTR     szCmdLine, 
+                    LPSTR     szCmdLine,
                     int       iCmdShow)
 {
   //handle to our window
   HWND						hWnd;
-    
+
   //our window class structure
   WNDCLASSEX     winclass;
-		 
+
   // first fill in the window class stucture
   winclass.cbSize        = sizeof(WNDCLASSEX);
   winclass.style         = CS_HREDRAW | CS_VREDRAW;
@@ -236,13 +237,13 @@ int WINAPI WinMain (HINSTANCE hInstance,
     return 0;
   }
 
-  //create the window and assign its ID to hwnd    
-  hWnd = CreateWindowEx (NULL,                 // extended style
+  //create the window and assign its ID to hwnd
+  hWnd = CreateWindowEx (0,                    // extended style
                          g_szWindowClassName,  // window class name
                          g_szApplicationName,  // window caption
                          WS_OVERLAPPED | WS_VISIBLE | WS_CAPTION | WS_SYSMENU,
                          GetSystemMetrics(SM_CXSCREEN)/2 - constWindowWidth/2,
-                         GetSystemMetrics(SM_CYSCREEN)/2 - constWindowHeight/2,                    
+                         GetSystemMetrics(SM_CYSCREEN)/2 - constWindowHeight/2,
                          constWindowWidth,     // initial x size
                          constWindowHeight,    // initial y size
                          NULL,                 // parent window handle
@@ -256,7 +257,7 @@ int WINAPI WinMain (HINSTANCE hInstance,
     MessageBox(NULL, "CreateWindowEx Failed!", "Error!", 0);
   }
 
-     
+
   //make the window visible
   ShowWindow (hWnd, iCmdShow);
   UpdateWindow (hWnd);
@@ -275,16 +276,16 @@ int WINAPI WinMain (HINSTANCE hInstance,
   MSG msg;
 
   while(!bDone)
-  {		
-    while( PeekMessage( &msg, NULL, 0, 0, PM_REMOVE ) ) 
+  {
+    while( PeekMessage( &msg, NULL, 0, 0, PM_REMOVE ) )
     {
-      if( msg.message == WM_QUIT) 
+      if( msg.message == WM_QUIT)
       {
         //stop loop if it's a quit message
 	      bDone = true;
-      } 
+      }
 
-      else 
+      else
       {
         TranslateMessage( &msg );
         DispatchMessage( &msg );
@@ -295,13 +296,13 @@ int WINAPI WinMain (HINSTANCE hInstance,
     {
       //update
       g_GameWorld->Update(timer.TimeElapsed());
-      
+
       //render
       RedrawWindow(hWnd, false);
 
       Sleep(2);
     }
-   					
+
   }//end while
 
 
@@ -313,5 +314,3 @@ int WINAPI WinMain (HINSTANCE hInstance,
 
   return msg.wParam;
 }
-
-

@@ -5,7 +5,7 @@
 //
 //  Name:   StateMachine.h
 //
-//  Desc:   State machine class. Inherit from this class and create some 
+//  Desc:   State machine class. Inherit from this class and create some
 //          states to give your agents FSM functionality
 //
 //  Author: Mat Buckland 2002 (fup@ai-junkie.com)
@@ -13,6 +13,7 @@
 //------------------------------------------------------------------------
 #include <cassert>
 #include <string>
+#include <typeinfo>
 
 #include "State.h"
 
@@ -27,13 +28,13 @@ private:
   entity_type*          m_pOwner;
 
   State<entity_type>*   m_pCurrentState;
-  
+
   //a record of the last state the agent was in
   State<entity_type>*   m_pPreviousState;
 
   //this is called every time the FSM is updated
   State<entity_type>*   m_pGlobalState;
-  
+
 
 public:
 
@@ -49,7 +50,7 @@ public:
   void SetCurrentState(State<entity_type>* s){m_pCurrentState = s;}
   void SetGlobalState(State<entity_type>* s) {m_pGlobalState = s;}
   void SetPreviousState(State<entity_type>* s){m_pPreviousState = s;}
-  
+
   //call this to update the FSM
   void  Update()const
   {
@@ -63,7 +64,7 @@ public:
   //change to a new state
   void  ChangeState(State<entity_type>* pNewState)
   {
-    assert(pNewState && 
+    assert(pNewState &&
            "<StateMachine::ChangeState>: trying to change to NULL state");
 
     //keep a record of the previous state
@@ -86,7 +87,7 @@ public:
   }
 
   //returns true if the current state's type is equal to the type of the
-  //class passed as a parameter. 
+  //class passed as a parameter.
   bool  isInState(const State<entity_type>& st)const
   {
     return typeid(*m_pCurrentState) == typeid(st);
@@ -101,5 +102,3 @@ public:
 
 
 #endif
-
-
