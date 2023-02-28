@@ -6,21 +6,20 @@ using std::string;
 void RemoveCommentingFromLine(string& line)
 {
     //search for any comment and remove
-    string::size_type idx = line.find('//');
+    string::size_type idx = line.find("//");
 
-                                      if (idx != string::npos)
-                                      {
-                                          //cut out the comment
-                                          line = line.substr(0, idx);
-                                      }
-                                      }
-                            //----------------------- GetNextParameter ------------------------------------
-                            //
-                            //  searches the text file for the next valid parameter. Discards any comments
-                            //  and returns the value as a string
-                            //-----------------------------------------------------------------------------
-                            string iniFileLoaderBase::GetNextParameter()
+    if (idx != string::npos)
     {
+        //cut out the comment
+        line = line.substr(0, idx);
+    }
+}
+//----------------------- GetNextParameter ------------------------------------
+//
+//  searches the text file for the next valid parameter. Discards any comments
+//  and returns the value as a string
+//-----------------------------------------------------------------------------
+string iniFileLoaderBase::GetNextParameter() {
 
         //this will be the string that holds the bext parameter
         std::string line;
@@ -54,7 +53,7 @@ void RemoveCommentingFromLine(string& line)
         string::size_type endIdx;
 
         //define some delimiters
-        const string delims(" \;=,");
+        const string delims(" ;=,");
 
         begIdx = line.find_first_not_of(delims);
 
@@ -106,7 +105,7 @@ void RemoveCommentingFromLine(string& line)
         string::size_type endIdx;
 
         //define some delimiters
-        const string delims(" \;=,");
+        const string delims(" ;=,");
 
         begIdx = CurrentLine.find_first_not_of(delims);
 
