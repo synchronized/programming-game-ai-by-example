@@ -6,7 +6,7 @@
 //  Name: PlayerBase.h
 //
 //  Desc: Definition of a soccer player base class. The player inherits
-//        from the autolist class so that any player created will be 
+//        from the autolist class so that any player created will be
 //        automatically added to a list that is easily accesible by any
 //        other game objects. (mainly used by the steering behaviors and
 //        player state classes)
@@ -17,9 +17,10 @@
 #include <vector>
 #include <string>
 #include <cassert>
-#include "misc/autolist.h"
-#include "2D/Vector2D.h"
-#include "Game/MovingEntity.h"
+
+#include "2d/Vector2D.h"
+#include "misc/Autolist.h"
+#include "game/MovingEntity.h"
 
 class SoccerTeam;
 class SoccerPitch;
@@ -34,7 +35,7 @@ class PlayerBase : public MovingEntity,
 {
 
 public:
-  
+
   enum player_role{goal_keeper, attacker, defender};
 
 protected:
@@ -44,7 +45,7 @@ protected:
 
   //a pointer to this player's team
   SoccerTeam*             m_pTeam;
- 
+
   //the steering behaviors
   SteeringBehaviors*      m_pSteering;
 
@@ -54,11 +55,11 @@ protected:
   //the region this player moves to before kickoff
   int                     m_iDefaultRegion;
 
-  //the distance to the ball (in squared-space). This value is queried 
+  //the distance to the ball (in squared-space). This value is queried
   //a lot so it's calculated once each time-step and stored here.
   double                   m_dDistSqToBall;
 
-  
+
   //the vertex buffer
   std::vector<Vector2D>   m_vecPlayerVB;
   //the buffer for the transformed vertices
@@ -81,7 +82,7 @@ public:
   virtual ~PlayerBase();
 
 
-  //returns true if there is an opponent within this player's 
+  //returns true if there is an opponent within this player's
   //comfort zone
   bool        isThreatened()const;
 
@@ -102,13 +103,13 @@ public:
   //returns true if a ball comes within range of a receiver
   bool        BallWithinReceivingRange()const;
 
-  //returns true if the player is located within the boundaries 
+  //returns true if the player is located within the boundaries
   //of his home region
   bool        InHomeRegion()const;
 
   //returns true if this player is ahead of the attacker
   bool        isAheadOfAttacker()const;
-  
+
   //returns true if a player is located at the designated support spot
   bool        AtSupportSpot()const;
 
@@ -151,7 +152,7 @@ public:
   const Region* const      HomeRegion()const;
   void                     SetHomeRegion(int NewRegion){m_iHomeRegion = NewRegion;}
   SoccerTeam*const         Team()const{return m_pTeam;}
-  
+
 };
 
 

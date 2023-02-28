@@ -13,9 +13,10 @@
 
 #include <string>
 
-#include "FSM/State.h"
-#include "Messaging/Telegram.h"
 #include "constants.h"
+
+#include "fsm/State.h"
+#include "messaging/Telegram.h"
 
 
 class FieldPlayer;
@@ -26,7 +27,7 @@ class SoccerPitch;
 class GlobalPlayerState : public State<FieldPlayer>
 {
 private:
-  
+
   GlobalPlayerState(){}
 
 public:
@@ -47,7 +48,7 @@ public:
 class ChaseBall : public State<FieldPlayer>
 {
 private:
-  
+
   ChaseBall(){}
 
 public:
@@ -68,7 +69,7 @@ public:
 class Dribble : public State<FieldPlayer>
 {
 private:
-  
+
   Dribble(){}
 
 public:
@@ -90,7 +91,7 @@ public:
 class ReturnToHomeRegion: public State<FieldPlayer>
 {
 private:
-  
+
   ReturnToHomeRegion(){}
 
 public:
@@ -111,7 +112,7 @@ public:
 class Wait: public State<FieldPlayer>
 {
 private:
-  
+
   Wait(){}
 
 public:
@@ -132,7 +133,7 @@ public:
 class KickBall: public State<FieldPlayer>
 {
 private:
-  
+
   KickBall(){}
 
 public:
@@ -153,7 +154,7 @@ public:
 class ReceiveBall: public State<FieldPlayer>
 {
 private:
-  
+
   ReceiveBall(){}
 
 public:
@@ -175,7 +176,7 @@ public:
 class SupportAttacker: public State<FieldPlayer>
 {
 private:
-  
+
   SupportAttacker(){}
 
 public:
@@ -195,5 +196,5 @@ public:
 
 
 
-  
+
 #endif

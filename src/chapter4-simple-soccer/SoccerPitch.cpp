@@ -1,18 +1,19 @@
 #include "SoccerPitch.h"
 #include "SoccerBall.h"
 #include "Goal.h"
-#include "Game/Region.h"
-#include "2D/Transformations.h"
-#include "2D/Geometry.h"
 #include "SoccerTeam.h"
-#include "Debug/DebugConsole.h"
-#include "Game/EntityManager.h"
 #include "ParamLoader.h"
 #include "PlayerBase.h"
 #include "TeamStates.h"
+
+#include "2d/Transformations.h"
+#include "2d/Geometry.h"
+#include "debug/DebugConsole.h"
+#include "game/EntityManager.h"
+#include "game/Region.h"
 #include "misc/FrameCounter.h"
 
-const int NumRegionsHorizontal = 6; 
+const int NumRegionsHorizontal = 6;
 const int NumRegionsVertical   = 3;
 
 //------------------------------- ctor -----------------------------------
@@ -27,7 +28,7 @@ SoccerPitch::SoccerPitch(int cx, int cy):m_cxClient(cx),
   //define the playing area
   m_pPlayingArea = new Region(20, 20, cx-20, cy-20);
 
-  //create the regions  
+  //create the regions
   CreateRegions(PlayingArea()->Width() / (double)NumRegionsHorizontal,
                 PlayingArea()->Height() / (double)NumRegionsVertical);
 
@@ -35,7 +36,7 @@ SoccerPitch::SoccerPitch(int cx, int cy):m_cxClient(cx),
    m_pRedGoal  = new Goal(Vector2D( m_pPlayingArea->Left(), (cy-Prm.GoalWidth)/2),
                           Vector2D(m_pPlayingArea->Left(), cy - (cy-Prm.GoalWidth)/2),
                           Vector2D(1,0));
-   
+
 
 
   m_pBlueGoal = new Goal( Vector2D( m_pPlayingArea->Right(), (cy-Prm.GoalWidth)/2),
@@ -49,21 +50,21 @@ SoccerPitch::SoccerPitch(int cx, int cy):m_cxClient(cx),
                            Prm.BallMass,
                            m_vecWalls);
 
-  
-  //create the teams 
+
+  //create the teams
   m_pRedTeam  = new SoccerTeam(m_pRedGoal, m_pBlueGoal, this, SoccerTeam::red);
   m_pBlueTeam = new SoccerTeam(m_pBlueGoal, m_pRedGoal, this, SoccerTeam::blue);
 
   //make sure each team knows who their opponents are
   m_pRedTeam->SetOpponents(m_pBlueTeam);
-  m_pBlueTeam->SetOpponents(m_pRedTeam); 
+  m_pBlueTeam->SetOpponents(m_pRedTeam);
 
   //create the walls
-  Vector2D TopLeft(m_pPlayingArea->Left(), m_pPlayingArea->Top());                                        
+  Vector2D TopLeft(m_pPlayingArea->Left(), m_pPlayingArea->Top());
   Vector2D TopRight(m_pPlayingArea->Right(), m_pPlayingArea->Top());
   Vector2D BottomRight(m_pPlayingArea->Right(), m_pPlayingArea->Bottom());
   Vector2D BottomLeft(m_pPlayingArea->Left(), m_pPlayingArea->Bottom());
-                                      
+
   m_vecWalls.push_back(Wall2D(BottomLeft, m_pRedGoal->RightPost()));
   m_vecWalls.push_back(Wall2D(m_pRedGoal->LeftPost(), TopLeft));
   m_vecWalls.push_back(Wall2D(TopLeft, TopRight));
@@ -116,8 +117,8 @@ void SoccerPitch::Update()
   if (m_pBlueGoal->Scored(m_pBall) || m_pRedGoal->Scored(m_pBall))
   {
     m_bGameOn = false;
-    
-    //reset the ball                                                      
+
+    //reset the ball
     m_pBall->PlaceAtPosition(Vector2D((double)m_cxClient/2.0, (double)m_cyClient/2.0));
 
     //get the teams ready for kickoff
@@ -128,10 +129,10 @@ void SoccerPitch::Update()
 
 //------------------------- CreateRegions --------------------------------
 void SoccerPitch::CreateRegions(double width, double height)
-{  
+{
   //index into the vector
   int idx = m_Regions.size()-1;
-    
+
   for (int col=0; col<NumRegionsHorizontal; ++col)
   {
     for (int row=0; row<NumRegionsVertical; ++row)
@@ -157,13 +158,13 @@ bool SoccerPitch::Render()
 
   //render regions
   if (Prm.bRegions)
-  {   
+  {
     for (unsigned int r=0; r<m_Regions.size(); ++r)
     {
       m_Regions[r]->Render(true);
     }
   }
-  
+
   //render the goals
   gdi->HollowBrush();
   gdi->RedPen();
@@ -171,7 +172,7 @@ bool SoccerPitch::Render()
 
   gdi->BluePen();
   gdi->Rect(m_pPlayingArea->Right(), (m_cyClient-Prm.GoalWidth)/2, m_pPlayingArea->Right()-40, m_cyClient - (m_cyClient-Prm.GoalWidth)/2);
-  
+
   //render the pitch markings
   gdi->WhitePen();
   gdi->Circle(m_pPlayingArea->Center(), m_pPlayingArea->Width() * 0.125);
@@ -184,10 +185,10 @@ bool SoccerPitch::Render()
   gdi->WhitePen();
   gdi->WhiteBrush();
   m_pBall->Render();
-  
+
   //Render the teams
   m_pRedTeam->Render();
-  m_pBlueTeam->Render(); 
+  m_pBlueTeam->Render();
 
   //render the walls
   gdi->WhitePen();
@@ -203,12 +204,5 @@ bool SoccerPitch::Render()
   gdi->TextColor(Cgdi::blue);
   gdi->TextAtPos((m_cxClient/2)+10, m_cyClient-18, "Blue: " + ttos(m_pRedGoal->NumGoalsScored()));
 
-  return true;  
+  return true;
 }
-
-
-
-
-
-
-

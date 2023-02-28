@@ -1,20 +1,20 @@
 #include "PlayerBase.h"
 #include "SteeringBehaviors.h"
-#include "2D/Transformations.h"
-#include "2D/Geometry.h"
-#include "misc/Cgdi.h"
-#include "2D/C2DMatrix.h"
-#include "Game/Region.h"
 #include "ParamLoader.h"
-#include "Messaging/MessageDispatcher.h"
 #include "SoccerMessages.h"
 #include "SoccerTeam.h"
 #include "ParamLoader.h"
 #include "Goal.h"
 #include "SoccerBall.h"
 #include "SoccerPitch.h"
-#include "Debug/DebugConsole.h"
 
+#include "2d/Transformations.h"
+#include "2d/Geometry.h"
+#include "2d/C2DMatrix.h"
+#include "debug/DebugConsole.h"
+#include "game/Region.h"
+#include "messaging/MessageDispatcher.h"
+#include "misc/Cgdi.h"
 
 using std::vector;
 
@@ -37,7 +37,7 @@ PlayerBase::PlayerBase(SoccerTeam* home_team,
                        double    max_speed,
                        double    max_turn_rate,
                        double    scale,
-                       player_role role):    
+                       player_role role):
 
     MovingEntity(home_team->Pitch()->GetRegionFromIndex(home_region)->Center(),
                  scale*10.0,
@@ -54,7 +54,7 @@ PlayerBase::PlayerBase(SoccerTeam* home_team,
    m_iDefaultRegion(home_region),
    m_PlayerRole(role)
 {
-  
+
   //setup the vertex buffers and calculate the bounding radius
   const int NumPlayerVerts = 4;
   const Vector2D player[NumPlayerVerts] = {Vector2D(-3, 8),
@@ -66,7 +66,7 @@ PlayerBase::PlayerBase(SoccerTeam* home_team,
   {
     m_vecPlayerVB.push_back(player[vtx]);
 
-    //set the bounding radius to the length of the 
+    //set the bounding radius to the length of the
     //greatest extent
     if (abs(player[vtx].x) > m_dBoundingRadius)
     {
@@ -82,8 +82,8 @@ PlayerBase::PlayerBase(SoccerTeam* home_team,
   //set up the steering behavior class
   m_pSteering = new SteeringBehaviors(this,
                                       m_pTeam->Pitch(),
-                                      Ball());  
-  
+                                      Ball());
+
   //a player's start target is its start position (because it's just waiting)
   m_pSteering->SetTarget(home_team->Pitch()->GetRegionFromIndex(home_region)->Center());
 }
@@ -97,7 +97,7 @@ PlayerBase::PlayerBase(SoccerTeam* home_team,
 //------------------------------------------------------------------------
 void PlayerBase::TrackBall()
 {
-  RotateHeadingToFacePosition(Ball()->Pos());  
+  RotateHeadingToFacePosition(Ball()->Pos());
 }
 
 //----------------------------- TrackTarget --------------------------------
@@ -135,8 +135,8 @@ bool PlayerBase::PositionInFrontOfPlayer(Vector2D position)const
 {
   Vector2D ToSubject = position - Pos();
 
-  if (ToSubject.Dot(Heading()) > 0) 
-    
+  if (ToSubject.Dot(Heading()) > 0)
+
     return true;
 
   else
@@ -146,26 +146,26 @@ bool PlayerBase::PositionInFrontOfPlayer(Vector2D position)const
 
 //------------------------- IsThreatened ---------------------------------
 //
-//  returns true if there is an opponent within this player's 
+//  returns true if there is an opponent within this player's
 //  comfort zone
 //------------------------------------------------------------------------
 bool PlayerBase::isThreatened()const
 {
   //check against all opponents to make sure non are within this
   //player's comfort zone
-  std::vector<PlayerBase*>::const_iterator curOpp;  
+  std::vector<PlayerBase*>::const_iterator curOpp;
   curOpp = Team()->Opponents()->Members().begin();
- 
+
   for (curOpp; curOpp != Team()->Opponents()->Members().end(); ++curOpp)
   {
     //calculate distance to the player. if dist is less than our
     //comfort zone, and the opponent is infront of the player, return true
     if (PositionInFrontOfPlayer((*curOpp)->Pos()) &&
        (Vec2DDistanceSq(Pos(), (*curOpp)->Pos()) < Prm.PlayerComfortZoneSq))
-    {        
+    {
       return true;
     }
-   
+
   }// next opp
 
   return false;
@@ -177,7 +177,7 @@ bool PlayerBase::isThreatened()const
 //  to tell him to change state to SupportAttacker
 //-----------------------------------------------------------------------------
 void PlayerBase::FindSupport()const
-{    
+{
   //if there is no support we need to find a suitable player.
   if (Team()->SupportingPlayer() == NULL)
   {
@@ -191,15 +191,15 @@ void PlayerBase::FindSupport()const
                             Msg_SupportAttacker,
                             NULL);
   }
-    
+
   PlayerBase* BestSupportPly = Team()->DetermineBestSupportingAttacker();
-    
+
   //if the best player available to support the attacker changes, update
   //the pointers and send messages to the relevant players to update their
   //states
   if (BestSupportPly && (BestSupportPly != Team()->SupportingPlayer()))
   {
-    
+
     if (Team()->SupportingPlayer())
     {
       Dispatcher->DispatchMsg(SEND_MSG_IMMEDIATELY,
@@ -208,9 +208,9 @@ void PlayerBase::FindSupport()const
                               Msg_GoHome,
                               NULL);
     }
-    
-    
-    
+
+
+
     Team()->SetSupportingPlayer(BestSupportPly);
 
     Dispatcher->DispatchMsg(SEND_MSG_IMMEDIATELY,
@@ -276,7 +276,7 @@ bool PlayerBase::isClosestTeamMemberToBall()const
 
 bool PlayerBase::isClosestPlayerOnPitchToBall()const
 {
-  return isClosestTeamMemberToBall() && 
+  return isClosestTeamMemberToBall() &&
          (DistSqToBall() < Team()->Opponents()->ClosestDistToBallSq());
 }
 
@@ -306,5 +306,3 @@ const Region* const PlayerBase::HomeRegion()const
 {
   return Pitch()->GetRegionFromIndex(m_iHomeRegion);
 }
-
-

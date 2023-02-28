@@ -1,13 +1,14 @@
 #include "GoalKeeper.h"
-#include "misc/Cgdi.h"
 #include "SteeringBehaviors.h"
 #include "SoccerTeam.h"
 #include "SoccerPitch.h"
-#include "2D/transformations.h"
 #include "GoalKeeperStates.h"
 #include "Goal.h"
-#include "game/EntityFunctionTemplates.h"
 #include "ParamLoader.h"
+
+#include "2d/Transformations.h"
+#include "game/EntityFunctionTemplates.h"
+#include "misc/Cgdi.h"
 
 
 
@@ -32,9 +33,9 @@ GoalKeeper::GoalKeeper(SoccerTeam*        home_team,
                                                              max_turn_rate,
                                                              scale,
                                                              PlayerBase::goal_keeper)
-                                         
-                                        
-{   
+
+
+{
    //set up the state machine
   m_pStateMachine = new StateMachine<GoalKeeper>(this);
 
@@ -42,7 +43,7 @@ GoalKeeper::GoalKeeper(SoccerTeam*        home_team,
   m_pStateMachine->SetPreviousState(start_state);
   m_pStateMachine->SetGlobalState(GlobalKeeperState::Instance());
 
-  m_pStateMachine->CurrentState()->Enter(this);        
+  m_pStateMachine->CurrentState()->Enter(this);
 }
 
 
@@ -50,11 +51,11 @@ GoalKeeper::GoalKeeper(SoccerTeam*        home_team,
 //-------------------------- Update --------------------------------------
 
 void GoalKeeper::Update()
-{ 
+{
   //run the logic for the current state
   m_pStateMachine->Update();
 
-  //calculate the combined force from each steering behavior 
+  //calculate the combined force from each steering behavior
   Vector2D SteeringForce = m_pSteering->Calculate();
 
 
@@ -80,7 +81,7 @@ void GoalKeeper::Update()
 
   //update the heading if the player has a non zero velocity
   if ( !m_vVelocity.isZero())
-  {    
+  {
     m_vHeading = Vec2DNormalize(m_vVelocity);
 
     m_vSide = m_vHeading.Perp();
@@ -110,11 +111,11 @@ Vector2D GoalKeeper::GetRearInterposeTarget()const
 {
   double xPosTarget = Team()->HomeGoal()->Center().x;
 
-  double yPosTarget = Pitch()->PlayingArea()->Center().y - 
+  double yPosTarget = Pitch()->PlayingArea()->Center().y -
                      Prm.GoalWidth*0.5 + (Ball()->Pos().y*Prm.GoalWidth) /
                      Pitch()->PlayingArea()->Height();
 
-  return Vector2D(xPosTarget, yPosTarget); 
+  return Vector2D(xPosTarget, yPosTarget);
 }
 
 //-------------------- HandleMessage -------------------------------------
@@ -129,13 +130,13 @@ bool GoalKeeper::HandleMessage(const Telegram& msg)
 //--------------------------- Render -------------------------------------
 //
 //------------------------------------------------------------------------
-void GoalKeeper::Render()                                         
+void GoalKeeper::Render()
 {
-  if (Team()->Color() == SoccerTeam::blue) 
+  if (Team()->Color() == SoccerTeam::blue)
     gdi->BluePen();
-  else 
+  else
     gdi->RedPen();
-  
+
   m_vecPlayerVBTrans = WorldTransform(m_vecPlayerVB,
                                        Pos(),
                                        m_vLookAt,
@@ -143,7 +144,7 @@ void GoalKeeper::Render()
                                        Scale());
 
   gdi->ClosedShape(m_vecPlayerVBTrans);
-  
+
   //draw the head
   gdi->BrownBrush();
   gdi->Circle(Pos(), 6);
@@ -157,9 +158,9 @@ void GoalKeeper::Render()
 
   //draw the state
   if (Prm.bStates)
-  { 
-    gdi->TextColor(0, 170, 0); 
-    gdi->TransparentText(); 
+  {
+    gdi->TextColor(0, 170, 0);
+    gdi->TransparentText();
     gdi->TextAtPos(m_vPosition.x, m_vPosition.y -20, std::string(m_pStateMachine->GetNameOfCurrentState()));
   }
 }

@@ -14,12 +14,11 @@
 //
 //------------------------------------------------------------------------
 #include "SoccerBall.h"
-#include "2D/Vector2D.h"
-#include "2D/geometry.h"
 
+#include "2d/Vector2D.h"
+#include "2d/Geometry.h"
 
-
-class Goal 
+class Goal
 {
 
 private:
@@ -46,7 +45,7 @@ public:
   {  }
 
   //Given the current ball position and the previous ball position,
-  //this method returns true if the ball has crossed the goal line 
+  //this method returns true if the ball has crossed the goal line
   //and increments m_iNumGoalsScored
   inline bool Scored(const SoccerBall*const ball);
 

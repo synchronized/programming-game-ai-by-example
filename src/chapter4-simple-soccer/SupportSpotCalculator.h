@@ -14,8 +14,8 @@
 
 #include <vector>
 
-#include "Game/Region.h"
-#include "2D/Vector2D.h"
+#include "2d/Vector2D.h"
+#include "game/Region.h"
 #include "misc/Cgdi.h"
 
 
@@ -32,11 +32,11 @@ class Regulator;
 class SupportSpotCalculator
 {
 private:
-  
+
   //a data structure to hold the values and positions of each spot
   struct SupportSpot
   {
-    
+
     Vector2D  m_vPos;
 
     double    m_dScore;
@@ -61,14 +61,14 @@ private:
   Regulator*                m_pRegulator;
 
 public:
-  
+
   SupportSpotCalculator(int numX,
                         int numY,
                         SoccerTeam* team);
 
   ~SupportSpotCalculator();
 
-  //draws the spots to the screen as a hollow circles. The higher the 
+  //draws the spots to the screen as a hollow circles. The higher the
   //score, the bigger the circle. The best supporting spot is drawn in
   //bright green.
   void       Render()const;

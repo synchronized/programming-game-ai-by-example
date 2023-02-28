@@ -196,7 +196,7 @@ void ResizeWindow(HWND hwnd, int cx, int cy)
     AdjustWindowRectEx(&DesiredSize,
                        WS_OVERLAPPED | WS_VISIBLE | WS_CAPTION | WS_SYSMENU,
                        bMenu,
-                       NULL);
+                       0);
 
     //resize the window to fit
     SetWindowPos(hwnd,

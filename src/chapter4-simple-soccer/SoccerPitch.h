@@ -17,9 +17,10 @@
 #include <vector>
 #include <cassert>
 
-#include "2D/Wall2D.h"
-#include "2D/Vector2D.h"
 #include "constants.h"
+
+#include "2d/Wall2D.h"
+#include "2d/Vector2D.h"
 
 class Region;
 class Goal;
@@ -30,7 +31,7 @@ class PlayerBase;
 
 
 class SoccerPitch
-{ 
+{
 public:
 
   SoccerBall*          m_pBall;
@@ -40,7 +41,7 @@ public:
 
   Goal*                m_pRedGoal;
   Goal*                m_pBlueGoal;
-   
+
   //container for the boundary walls
   std::vector<Wall2D>  m_vecWalls;
 
@@ -63,8 +64,8 @@ public:
 
   //local copy of client window dimensions
   int                  m_cxClient,
-                       m_cyClient;  
-  
+                       m_cyClient;
+
   //this instantiates the regions the players utilize to  position
   //themselves
   void CreateRegions(double width, double height);
@@ -90,10 +91,10 @@ public:
   void  SetGoalKeeperHasBall(bool b){m_bGoalKeeperHasBall = b;}
 
   const Region*const         PlayingArea()const{return m_pPlayingArea;}
-  const std::vector<Wall2D>& Walls(){return m_vecWalls;}                      
+  const std::vector<Wall2D>& Walls(){return m_vecWalls;}
   SoccerBall*const           Ball()const{return m_pBall;}
 
-  const Region* const GetRegionFromIndex(int idx)                                
+  const Region* const GetRegionFromIndex(int idx)
   {
     assert ( (idx >= 0) && (idx < (int)m_Regions.size()) );
 

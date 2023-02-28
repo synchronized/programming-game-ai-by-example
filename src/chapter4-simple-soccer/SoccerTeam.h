@@ -17,9 +17,10 @@
 
 #include <vector>
 
-#include "Game/Region.h"
 #include "SupportSpotCalculator.h"
-#include "FSM/StateMachine.h"
+
+#include "fsm/StateMachine.h"
+#include "game/Region.h"
 
 class Goal;
 class PlayerBase;
@@ -31,11 +32,11 @@ class SupportSpotCalculator;
 
 
 
-                
-class SoccerTeam 
+
+class SoccerTeam
 {
 public:
-  
+
   enum team_color {blue, red};
 
 private:
@@ -55,10 +56,10 @@ private:
   //pointers to the goals
   Goal*                     m_pOpponentsGoal;
   Goal*                     m_pHomeGoal;
-  
+
   //a pointer to the opposing team
   SoccerTeam*               m_pOpponents;
-   
+
   //pointers to 'key' players
   PlayerBase*               m_pControllingPlayer;
   PlayerBase*               m_pSupportingPlayer;
@@ -76,7 +77,7 @@ private:
   void CreatePlayers();
 
   //called each frame. Sets m_pClosestPlayerToBall to point to the player
-  //closest to the ball. 
+  //closest to the ball.
   void CalculateClosestPlayerToBall();
 
 
@@ -93,7 +94,7 @@ public:
   void        Render()const;
   void        Update();
 
-  //calling this changes the state of all field players to that of 
+  //calling this changes the state of all field players to that of
   //ReturnToHomeRegion. Mainly used when a goal keeper has
   //possession
   void        ReturnAllFieldPlayersToHome()const;
@@ -101,14 +102,14 @@ public:
   //returns true if player has a clean shot at the goal and sets ShotTarget
   //to a normalized vector pointing in the direction the shot should be
   //made. Else returns false and sets heading to a zero vector
-  bool        CanShoot(Vector2D  BallPos,
-                       double     power, 
-                       Vector2D& ShotTarget = Vector2D())const;
+  bool        CanShoot(Vector2D BallPos,
+                       double   power,
+                       Vector2D ShotTarget = Vector2D())const;
 
-  //The best pass is considered to be the pass that cannot be intercepted 
-  //by an opponent and that is as far forward of the receiver as possible  
-  //If a pass is found, the receiver's address is returned in the 
-  //reference, 'receiver' and the position the pass will be made to is 
+  //The best pass is considered to be the pass that cannot be intercepted
+  //by an opponent and that is as far forward of the receiver as possible
+  //If a pass is found, the receiver's address is returned in the
+  //reference, 'receiver' and the position the pass will be made to is
   //returned in the  reference 'PassTarget'
   bool        FindPass(const PlayerBase*const passer,
                       PlayerBase*&           receiver,
@@ -122,14 +123,14 @@ public:
   //These passes are then tested to see if they can be intercepted by an
   //opponent and to make sure they terminate within the playing area. If
   //all the passes are invalidated the function returns false. Otherwise
-  //the function returns the pass that takes the ball closest to the 
+  //the function returns the pass that takes the ball closest to the
   //opponent's goal area.
   bool        GetBestPassToReceiver(const PlayerBase* const passer,
                                     const PlayerBase* const receiver,
                                     Vector2D& PassTarget,
                                     const double power)const;
 
-  //test if a pass from positions 'from' to 'target' kicked with force 
+  //test if a pass from positions 'from' to 'target' kicked with force
   //'PassingForce'can be intercepted by an opposing player
   bool        isPassSafeFromOpponent(Vector2D    from,
                                      Vector2D    target,
@@ -156,16 +157,16 @@ public:
   //calculates the best supporting position and finds the most appropriate
   //attacker to travel to the spot
   PlayerBase* DetermineBestSupportingAttacker();
-  
 
-  const std::vector<PlayerBase*>& Members()const{return m_Players;}  
+
+  const std::vector<PlayerBase*>& Members()const{return m_Players;}
 
   StateMachine<SoccerTeam>* GetFSM()const{return m_pStateMachine;}
-  
+
   Goal*const           HomeGoal()const{return m_pHomeGoal;}
   Goal*const           OpponentsGoal()const{return m_pOpponentsGoal;}
 
-  SoccerPitch*const    Pitch()const{return m_pPitch;}           
+  SoccerPitch*const    Pitch()const{return m_pPitch;}
 
   SoccerTeam*const     Opponents()const{return m_pOpponents;}
   void                 SetOpponents(SoccerTeam* opps){m_pOpponents = opps;}
@@ -174,7 +175,7 @@ public:
 
   void                 SetPlayerClosestToBall(PlayerBase* plyr){m_pPlayerClosestToBall=plyr;}
   PlayerBase*          PlayerClosestToBall()const{return m_pPlayerClosestToBall;}
-  
+
   double               ClosestDistToBallSq()const{return m_dDistSqToBallOfClosestPlayer;}
 
   Vector2D             GetSupportSpot()const{return m_pSupportSpotCalc->GetBestSupportingSpot();}
@@ -199,7 +200,7 @@ public:
   void  LostControl(){m_pControllingPlayer = NULL;}
 
   PlayerBase*  GetPlayerFromID(int id)const;
-  
+
 
   void SetPlayerHomeRegion(int plyr, int region)const;
 

@@ -18,10 +18,11 @@
 #include <cassert>
 
 #include "FieldPlayerStates.h"
-#include "2D/Vector2D.h"
-#include "FSM/StateMachine.h"
 #include "PlayerBase.h"
-#include "FSM/StateMachine.h"
+
+#include "2d/Vector2D.h"
+#include "fsm/StateMachine.h"
+#include "fsm/StateMachine.h"
 #include "time/Regulator.h"
 
 class CSteeringBehavior;
@@ -37,11 +38,11 @@ private:
 
    //an instance of the state machine class
   StateMachine<FieldPlayer>*  m_pStateMachine;
-  
+
   //limits the number of kicks a player may take per second
   Regulator*                  m_pKickLimiter;
 
-  
+
 public:
 
   FieldPlayer(SoccerTeam*    home_team,
@@ -54,12 +55,12 @@ public:
              double         max_speed,
              double         max_turn_rate,
              double         scale,
-             player_role    role);   
-  
+             player_role    role);
+
   ~FieldPlayer();
 
   //call this to update the player's position and orientation
-  void        Update();   
+  void        Update();
 
   void        Render();
 
@@ -69,7 +70,7 @@ public:
 
   bool        isReadyForNextKick()const{return m_pKickLimiter->isReady();}
 
-         
+
 };
 
 

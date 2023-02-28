@@ -1,8 +1,8 @@
 #ifndef GAME_ENTITY_FUNCTION_TEMPLATES
 #define GAME_ENTITY_FUNCTION_TEMPLATES
 
+#include "2d/Geometry.h"
 #include "game/BaseGameEntity.h"
-#include "2d/geometry.h"
 
 
 

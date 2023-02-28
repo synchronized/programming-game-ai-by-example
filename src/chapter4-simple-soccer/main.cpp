@@ -3,22 +3,23 @@
 #include <time.h>
 
 #include "constants.h"
-#include "misc/utils.h"
-#include "Time/PrecisionTimer.h"
 #include "SoccerPitch.h"
-#include "misc/Cgdi.h"
 #include "ParamLoader.h"
 #include "Resource.h"
-#include "misc/WindowUtils.h"
+
 #include "debug/DebugConsole.h"
+#include "misc/Cgdi.h"
+#include "misc/Utils.h"
+#include "misc/WindowUtils.h"
+#include "time/PrecisionTimer.h"
 
 
 //--------------------------------- Globals ------------------------------
 //
 //------------------------------------------------------------------------
 
-char* g_szApplicationName = "Simple Soccer";
-char*	g_szWindowClassName = "MyWindowClass";
+const char* g_szApplicationName = "Simple Soccer";
+const char* g_szWindowClassName = "MyWindowClass";
 
 SoccerPitch* g_SoccerPitch;
 
@@ -30,18 +31,18 @@ PrecisionTimer timer(Prm.FrameRate);
 //correctly
 void CheckAllMenuItemsAppropriately(HWND hwnd)
 {
-   CheckMenuItemAppropriately(hwnd, IDM_SHOW_REGIONS, Prm.bRegions);
-   CheckMenuItemAppropriately(hwnd, IDM_SHOW_STATES, Prm.bStates);
-   CheckMenuItemAppropriately(hwnd, IDM_SHOW_IDS, Prm.bIDs);
-   CheckMenuItemAppropriately(hwnd, IDM_AIDS_SUPPORTSPOTS, Prm.bSupportSpots);
-   CheckMenuItemAppropriately(hwnd, ID_AIDS_SHOWTARGETS, Prm.bViewTargets);
-   CheckMenuItemAppropriately(hwnd, IDM_AIDS_HIGHLITE, Prm.bHighlightIfThreatened);
+    CheckMenuItemAppropriately(hwnd, IDM_SHOW_REGIONS, Prm.bRegions);
+    CheckMenuItemAppropriately(hwnd, IDM_SHOW_STATES, Prm.bStates);
+    CheckMenuItemAppropriately(hwnd, IDM_SHOW_IDS, Prm.bIDs);
+    CheckMenuItemAppropriately(hwnd, IDM_AIDS_SUPPORTSPOTS, Prm.bSupportSpots);
+    CheckMenuItemAppropriately(hwnd, ID_AIDS_SHOWTARGETS, Prm.bViewTargets);
+    CheckMenuItemAppropriately(hwnd, IDM_AIDS_HIGHLITE, Prm.bHighlightIfThreatened);
 }
 
 
 //---------------------------- WindowProc ---------------------------------
-//	
-//	This is the callback function which handles all the windows messages
+//
+//  This is the callback function which handles all the windows messages
 //-------------------------------------------------------------------------
 
 LRESULT CALLBACK WindowProc (HWND   hwnd,
@@ -49,351 +50,349 @@ LRESULT CALLBACK WindowProc (HWND   hwnd,
                              WPARAM wParam,
                              LPARAM lParam)
 {
- 
-   //these hold the dimensions of the client window area
-	 static int cxClient, cyClient; 
 
-	 //used to create the back buffer
-   static HDC		hdcBackBuffer;
-   static HBITMAP	hBitmap;
-   static HBITMAP	hOldBitmap;
+    //these hold the dimensions of the client window area
+    static int cxClient, cyClient;
+
+    //used to create the back buffer
+    static HDC    hdcBackBuffer;
+    static HBITMAP  hBitmap;
+    static HBITMAP  hOldBitmap;
 
     switch (msg)
     {
-	
-		//A WM_CREATE msg is sent when your application window is first
-		//created
-    case WM_CREATE:
-      {
-         //to get get the size of the client window first we need  to create
-         //a RECT and then ask Windows to fill in our RECT structure with
-         //the client window size. Then we assign to cxClient and cyClient 
-         //accordingly
-			   RECT rect;
 
-			   GetClientRect(hwnd, &rect);
-
-			   cxClient = rect.right;
-			   cyClient = rect.bottom;
-
-         //seed random number generator
-         srand((unsigned) time(NULL));
-
-         
-         //---------------create a surface to render to(backbuffer)
-
-         //create a memory device context
-         hdcBackBuffer = CreateCompatibleDC(NULL);
-
-         //get the DC for the front buffer
-         HDC hdc = GetDC(hwnd);
-
-         hBitmap = CreateCompatibleBitmap(hdc,
-                                          cxClient,
-                                          cyClient);
-
-			  
-         //select the bitmap into the memory device context
-			   hOldBitmap = (HBITMAP)SelectObject(hdcBackBuffer, hBitmap);
-
-         //don't forget to release the DC
-         ReleaseDC(hwnd, hdc); 
-         
-         g_SoccerPitch = new SoccerPitch(cxClient, cyClient); 
-         
-         CheckAllMenuItemsAppropriately(hwnd);
-
-      }
-
-      break;
-
-    case WM_COMMAND:
-      {
-        switch(wParam)
-        {
-          case ID_AIDS_NOAIDS:
-
-            Prm.bStates        = 0;
-            Prm.bRegions       = 0;
-            Prm.bIDs           = 0;
-            Prm.bSupportSpots  = 0;
-            Prm.bViewTargets   = 0;
-
-            CheckAllMenuItemsAppropriately(hwnd);
-
-            break;
-            
-          case IDM_SHOW_REGIONS:
-
-            Prm.bRegions = !Prm.bRegions;
-
-            CheckAllMenuItemsAppropriately(hwnd);
-
-            break;
-
-          case IDM_SHOW_STATES:
-
-            Prm.bStates = !Prm.bStates;
-
-            CheckAllMenuItemsAppropriately(hwnd);
-
-            break;
-
-          case IDM_SHOW_IDS:
-
-            Prm.bIDs = !Prm.bIDs;
-
-            CheckAllMenuItemsAppropriately(hwnd);
-
-            break;
-
-
-          case IDM_AIDS_SUPPORTSPOTS:
-
-            Prm.bSupportSpots = !Prm.bSupportSpots;
-
-            CheckAllMenuItemsAppropriately(hwnd);
-
-             break;
-
-           case ID_AIDS_SHOWTARGETS:
-
-            Prm.bViewTargets = !Prm.bViewTargets;
-
-            CheckAllMenuItemsAppropriately(hwnd);
-
-             break;
-              
-           case IDM_AIDS_HIGHLITE:
-
-            Prm.bHighlightIfThreatened = !Prm.bHighlightIfThreatened; 
-
-            CheckAllMenuItemsAppropriately(hwnd);
-
-            break;
-            
-        }//end switch
-      }
-
-      break;
-
-
-    case WM_KEYUP:
-      {
-        switch(wParam)
-        {
-           case VK_ESCAPE:
-            {             
-              SendMessage(hwnd, WM_DESTROY, NULL, NULL);
-            }
-          
-            break;
-
-          case 'R':
+        //A WM_CREATE msg is sent when your application window is first
+        //created
+        case WM_CREATE:
             {
-               delete g_SoccerPitch;
-           
-               g_SoccerPitch = new SoccerPitch(cxClient, cyClient);
+                //to get get the size of the client window first we need  to create
+                //a RECT and then ask Windows to fill in our RECT structure with
+                //the client window size. Then we assign to cxClient and cyClient
+                //accordingly
+                RECT rect;
+
+                GetClientRect(hwnd, &rect);
+
+                cxClient = rect.right;
+                cyClient = rect.bottom;
+
+                //seed random number generator
+                srand((unsigned) time(NULL));
+
+
+                //---------------create a surface to render to(backbuffer)
+
+                //create a memory device context
+                hdcBackBuffer = CreateCompatibleDC(NULL);
+
+                //get the DC for the front buffer
+                HDC hdc = GetDC(hwnd);
+
+                hBitmap = CreateCompatibleBitmap(hdc,
+                                                 cxClient,
+                                                 cyClient);
+
+
+                //select the bitmap into the memory device context
+                hOldBitmap = (HBITMAP)SelectObject(hdcBackBuffer, hBitmap);
+
+                //don't forget to release the DC
+                ReleaseDC(hwnd, hdc);
+
+                g_SoccerPitch = new SoccerPitch(cxClient, cyClient);
+
+                CheckAllMenuItemsAppropriately(hwnd);
+
             }
 
             break;
 
-          case 'P':
+        case WM_COMMAND:
             {
-              g_SoccerPitch->TogglePause();
+                switch(wParam)
+                {
+                    case ID_AIDS_NOAIDS:
+
+                        Prm.bStates        = 0;
+                        Prm.bRegions       = 0;
+                        Prm.bIDs           = 0;
+                        Prm.bSupportSpots  = 0;
+                        Prm.bViewTargets   = 0;
+
+                        CheckAllMenuItemsAppropriately(hwnd);
+
+                        break;
+
+                    case IDM_SHOW_REGIONS:
+
+                        Prm.bRegions = !Prm.bRegions;
+
+                        CheckAllMenuItemsAppropriately(hwnd);
+
+                        break;
+
+                    case IDM_SHOW_STATES:
+
+                        Prm.bStates = !Prm.bStates;
+
+                        CheckAllMenuItemsAppropriately(hwnd);
+
+                        break;
+
+                    case IDM_SHOW_IDS:
+
+                        Prm.bIDs = !Prm.bIDs;
+
+                        CheckAllMenuItemsAppropriately(hwnd);
+
+                        break;
+
+
+                    case IDM_AIDS_SUPPORTSPOTS:
+
+                        Prm.bSupportSpots = !Prm.bSupportSpots;
+
+                        CheckAllMenuItemsAppropriately(hwnd);
+
+                        break;
+
+                    case ID_AIDS_SHOWTARGETS:
+
+                        Prm.bViewTargets = !Prm.bViewTargets;
+
+                        CheckAllMenuItemsAppropriately(hwnd);
+
+                        break;
+
+                    case IDM_AIDS_HIGHLITE:
+
+                        Prm.bHighlightIfThreatened = !Prm.bHighlightIfThreatened;
+
+                        CheckAllMenuItemsAppropriately(hwnd);
+
+                        break;
+
+                }//end switch
             }
 
             break;
 
-        }//end switch
-        
-      }//end WM_KEYUP
 
-      break;
+        case WM_KEYUP:
+            {
+                switch(wParam)
+                {
+                    case VK_ESCAPE:
+                        {
+                            SendMessage(hwnd, WM_DESTROY, 0, 0);
+                        }
 
-    
-    case WM_PAINT:
-      {
- 		       
-         PAINTSTRUCT ps;
-          
-         BeginPaint (hwnd, &ps);
-         
-         gdi->StartDrawing(hdcBackBuffer);
-         
-         g_SoccerPitch->Render();
+                        break;
 
-         gdi->StopDrawing(hdcBackBuffer);
+                    case 'R':
+                        {
+                            delete g_SoccerPitch;
 
-        
+                            g_SoccerPitch = new SoccerPitch(cxClient, cyClient);
+                        }
 
-         //now blit backbuffer to front
-			   BitBlt(ps.hdc, 0, 0, cxClient, cyClient, hdcBackBuffer, 0, 0, SRCCOPY); 
-          
-         EndPaint (hwnd, &ps);
+                        break;
 
-      }
+                    case 'P':
+                        {
+                            g_SoccerPitch->TogglePause();
+                        }
 
-      break;
+                        break;
 
-    //has the user resized the client area?
-		case WM_SIZE:
-		  {
-        //if so we need to update our variables so that any drawing
-        //we do using cxClient and cyClient is scaled accordingly
-			  cxClient = LOWORD(lParam);
-			  cyClient = HIWORD(lParam);
+                }//end switch
 
-      //now to resize the backbuffer accordingly. First select
-      //the old bitmap back into the DC
-			SelectObject(hdcBackBuffer, hOldBitmap);
+            }//end WM_KEYUP
 
-      //don't forget to do this or you will get resource leaks
-      DeleteObject(hBitmap); 
+            break;
 
-			//get the DC for the application
-      HDC hdc = GetDC(hwnd);
 
-			//create another bitmap of the same size and mode
-      //as the application
-      hBitmap = CreateCompatibleBitmap(hdc,
-											cxClient,
-											cyClient);
+        case WM_PAINT:
+            {
 
-			ReleaseDC(hwnd, hdc);
-			
-			//select the new bitmap into the DC
-      SelectObject(hdcBackBuffer, hBitmap);
+                PAINTSTRUCT ps;
 
-      }
+                BeginPaint (hwnd, &ps);
 
-      break;
-          
-		 case WM_DESTROY:
-			 {
+                gdi->StartDrawing(hdcBackBuffer);
 
-         //clean up our backbuffer objects
-         SelectObject(hdcBackBuffer, hOldBitmap);
+                g_SoccerPitch->Render();
 
-         DeleteDC(hdcBackBuffer);
-         DeleteObject(hBitmap); 
-         
-         // kill the application, this sends a WM_QUIT message  
-				 PostQuitMessage (0);
-			 }
+                gdi->StopDrawing(hdcBackBuffer);
 
-       break;
 
-     }//end switch
 
-     //this is where all the messages not specifically handled by our 
-		 //winproc are sent to be processed
-		 return DefWindowProc (hwnd, msg, wParam, lParam);
+                //now blit backbuffer to front
+                BitBlt(ps.hdc, 0, 0, cxClient, cyClient, hdcBackBuffer, 0, 0, SRCCOPY);
+
+                EndPaint (hwnd, &ps);
+
+            }
+
+            break;
+
+            //has the user resized the client area?
+        case WM_SIZE:
+            {
+                //if so we need to update our variables so that any drawing
+                //we do using cxClient and cyClient is scaled accordingly
+                cxClient = LOWORD(lParam);
+                cyClient = HIWORD(lParam);
+
+                //now to resize the backbuffer accordingly. First select
+                //the old bitmap back into the DC
+                SelectObject(hdcBackBuffer, hOldBitmap);
+
+                //don't forget to do this or you will get resource leaks
+                DeleteObject(hBitmap);
+
+                //get the DC for the application
+                HDC hdc = GetDC(hwnd);
+
+                //create another bitmap of the same size and mode
+                //as the application
+                hBitmap = CreateCompatibleBitmap(hdc,
+                                                 cxClient,
+                                                 cyClient);
+
+                ReleaseDC(hwnd, hdc);
+
+                //select the new bitmap into the DC
+                SelectObject(hdcBackBuffer, hBitmap);
+
+            }
+
+            break;
+
+        case WM_DESTROY:
+            {
+
+                //clean up our backbuffer objects
+                SelectObject(hdcBackBuffer, hOldBitmap);
+
+                DeleteDC(hdcBackBuffer);
+                DeleteObject(hBitmap);
+
+                // kill the application, this sends a WM_QUIT message
+                PostQuitMessage (0);
+            }
+
+            break;
+
+    }//end switch
+
+    //this is where all the messages not specifically handled by our
+    //winproc are sent to be processed
+    return DefWindowProc (hwnd, msg, wParam, lParam);
 }
 
 //-------------------------------- WinMain -------------------------------
 //
-//	The entry point of the windows program
+//  The entry point of the windows program
 //------------------------------------------------------------------------
 int WINAPI WinMain (HINSTANCE hInstance,
                     HINSTANCE hPrevInstance,
-                    LPSTR     szCmdLine, 
+                    LPSTR     szCmdLine,
                     int       iCmdShow)
 {
 
-  //handle to our window
-  HWND						hWnd;
-    
-  //our window class structure
-  WNDCLASSEX     winclass;
-		 
-  // first fill in the window class stucture
-  winclass.cbSize        = sizeof(WNDCLASSEX);
-  winclass.style         = CS_HREDRAW | CS_VREDRAW;
-  winclass.lpfnWndProc   = WindowProc;
-  winclass.cbClsExtra    = 0;
-  winclass.cbWndExtra    = 0;
-  winclass.hInstance     = hInstance;
-  winclass.hIcon         = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_ICON1));
-  winclass.hCursor       = LoadCursor(NULL, IDC_ARROW);
-  winclass.hbrBackground = NULL;
-  winclass.lpszMenuName  = MAKEINTRESOURCE(IDR_MENU1);
-  winclass.lpszClassName = g_szWindowClassName;
-  winclass.hIconSm       = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_ICON1));
+    //handle to our window
+    HWND            hWnd;
 
-  //register the window class
-  if (!RegisterClassEx(&winclass))
-  {
-    MessageBox(NULL, "Registration Failed!", "Error", 0);
+    //our window class structure
+    WNDCLASSEX     winclass;
 
-    //exit the application
-    return 0;
-  }
+    // first fill in the window class stucture
+    winclass.cbSize        = sizeof(WNDCLASSEX);
+    winclass.style         = CS_HREDRAW | CS_VREDRAW;
+    winclass.lpfnWndProc   = WindowProc;
+    winclass.cbClsExtra    = 0;
+    winclass.cbWndExtra    = 0;
+    winclass.hInstance     = hInstance;
+    winclass.hIcon         = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_ICON1));
+    winclass.hCursor       = LoadCursor(NULL, IDC_ARROW);
+    winclass.hbrBackground = NULL;
+    winclass.lpszMenuName  = MAKEINTRESOURCE(IDR_MENU1);
+    winclass.lpszClassName = g_szWindowClassName;
+    winclass.hIconSm       = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_ICON1));
 
-  //create the window and assign its ID to hwnd    
-  hWnd = CreateWindowEx (NULL,                 // extended style
-                         g_szWindowClassName,  // window class name
-                         g_szApplicationName,  // window caption
-                         WS_OVERLAPPED | WS_VISIBLE | WS_CAPTION | WS_SYSMENU,
-                         GetSystemMetrics(SM_CXSCREEN)/2 - WindowWidth/2,
-                         GetSystemMetrics(SM_CYSCREEN)/2 - WindowHeight/2,                    
-                         WindowWidth,     // initial x size
-                         WindowHeight,    // initial y size
-                         NULL,                 // parent window handle
-                         NULL,                 // window menu handle
-                         hInstance,            // program instance handle
-                         NULL);                // creation parameters
-
-  //make sure the window creation has gone OK
-  if(!hWnd)
-  {
-    MessageBox(NULL, "CreateWindowEx Failed!", "Error!", 0);
-  }
-  
-  //start the timer
-  timer.Start();
-
-  MSG msg;
-
-  //enter the message loop
-  bool bDone = false;
-
-  while(!bDone)
-  {
-					
-    while( PeekMessage( &msg, NULL, 0, 0, PM_REMOVE ) ) 
+    //register the window class
+    if (!RegisterClassEx(&winclass))
     {
-      if( msg.message == WM_QUIT ) 
-      {
-        // Stop loop if it's a quit message
-	      bDone = true;
-      } 
+        MessageBox(NULL, "Registration Failed!", "Error", 0);
 
-      else 
-      {
-        TranslateMessage( &msg );
-        DispatchMessage( &msg );
-      }
+        //exit the application
+        return 0;
     }
 
-    if (timer.ReadyForNextFrame() && msg.message != WM_QUIT)
+    //create the window and assign its ID to hwnd
+    hWnd = CreateWindowEx (0,                 // extended style
+                           g_szWindowClassName,  // window class name
+                           g_szApplicationName,  // window caption
+                           WS_OVERLAPPED | WS_VISIBLE | WS_CAPTION | WS_SYSMENU,
+                           GetSystemMetrics(SM_CXSCREEN)/2 - WindowWidth/2,
+                           GetSystemMetrics(SM_CYSCREEN)/2 - WindowHeight/2,
+                           WindowWidth,     // initial x size
+                           WindowHeight,    // initial y size
+                           NULL,                 // parent window handle
+                           NULL,                 // window menu handle
+                           hInstance,            // program instance handle
+                           NULL);                // creation parameters
+
+    //make sure the window creation has gone OK
+    if(!hWnd)
     {
-      //update game states
-      g_SoccerPitch->Update(); 
-      
-      //render 
-      RedrawWindow(hWnd, true);
-
-      Sleep(2);
+        MessageBox(NULL, "CreateWindowEx Failed!", "Error!", 0);
     }
-   					
-  }//end while
 
-  delete g_SoccerPitch;
+    //start the timer
+    timer.Start();
 
-  UnregisterClass( g_szWindowClassName, winclass.hInstance );
+    MSG msg;
 
-  return msg.wParam;
+    //enter the message loop
+    bool bDone = false;
+
+    while(!bDone)
+    {
+
+        while( PeekMessage( &msg, NULL, 0, 0, PM_REMOVE ) )
+        {
+            if( msg.message == WM_QUIT )
+            {
+                // Stop loop if it's a quit message
+                bDone = true;
+            }
+
+            else
+            {
+                TranslateMessage( &msg );
+                DispatchMessage( &msg );
+            }
+        }
+
+        if (timer.ReadyForNextFrame() && msg.message != WM_QUIT)
+        {
+            //update game states
+            g_SoccerPitch->Update();
+
+            //render
+            RedrawWindow(hWnd, true);
+
+            Sleep(2);
+        }
+
+    }//end while
+
+    delete g_SoccerPitch;
+
+    UnregisterClass( g_szWindowClassName, winclass.hInstance );
+
+    return msg.wParam;
 }
-
-

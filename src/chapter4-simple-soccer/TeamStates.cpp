@@ -1,14 +1,14 @@
 #include "TeamStates.h"
 #include "SoccerTeam.h"
 #include "PlayerBase.h"
-#include "Messaging/MessageDispatcher.h"
 #include "SoccerMessages.h"
 #include "constants.h"
 #include "SoccerPitch.h"
 
 //uncomment to send state info to debug window
 //#define DEBUG_TEAM_STATES
-#include "Debug/DebugConsole.h"
+#include "debug/DebugConsole.h"
+#include "messaging/MessageDispatcher.h"
 
 
 
@@ -106,7 +106,7 @@ void Defending::Enter(SoccerTeam* team)
   {
     ChangePlayerHomeRegions(team, RedRegions);
   }
-  
+
   //if a player is in either the Wait or ReturnToHomeRegion states, its
   //steering target must be updated to that of its new home region
   team->UpdateTargetsOfWaitingPlayers();
@@ -158,5 +158,3 @@ void PrepareForKickOff::Exit(SoccerTeam* team)
 {
   team->Pitch()->SetGameOn();
 }
-
-

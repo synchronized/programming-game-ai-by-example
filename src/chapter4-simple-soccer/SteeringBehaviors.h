@@ -15,7 +15,7 @@
 #include <string>
 
 
-#include "2D/Vector2D.h"
+#include "2d/Vector2D.h"
 
 class PlayerBase;
 class SoccerPitch;
@@ -29,8 +29,8 @@ class CObstacle;
 class SteeringBehaviors
 {
 private:
-  
-  PlayerBase*   m_pPlayer;                                                  
+
+  PlayerBase*   m_pPlayer;
 
   SoccerBall*   m_pBall;
 
@@ -44,7 +44,7 @@ private:
   //the distance the player tries to interpose from the target
   double        m_dInterposeDist;
 
-  //multipliers. 
+  //multipliers.
   double        m_dMultSeparation;
 
   //how far it can 'see'
@@ -66,7 +66,7 @@ private:
 
   //used by group behaviors to tag neighbours
   bool         m_bTagged;
-  
+
   //Arrive makes use of these to determine how quickly a vehicle
   //should decelerate to its target
   enum Deceleration{slow = 3, normal = 2, fast = 1};
@@ -75,14 +75,14 @@ private:
   //this behavior moves the agent towards a target position
   Vector2D Seek(Vector2D target);
 
-  //this behavior is similar to seek but it attempts to arrive 
+  //this behavior is similar to seek but it attempts to arrive
   //at the target with a zero velocity
   Vector2D Arrive(Vector2D target, Deceleration decel);
 
   //This behavior predicts where its prey will be and seeks
   //to that location
   Vector2D Pursuit(const SoccerBall* ball);
- 
+
   Vector2D Separation();
 
   //this attempts to steer the agent to a position between the opponent
@@ -106,7 +106,7 @@ private:
   //a vertex buffer to contain the feelers rqd for dribbling
   std::vector<Vector2D> m_Antenna;
 
-  
+
 public:
 
   SteeringBehaviors(PlayerBase*       agent,
@@ -115,7 +115,7 @@ public:
 
   virtual ~SteeringBehaviors(){}
 
- 
+
   Vector2D Calculate();
 
   //calculates the component of the steering force that is parallel
@@ -142,7 +142,7 @@ public:
   bool      Tagged()const{return m_bTagged;}
   void      Tag(){m_bTagged = true;}
   void      UnTag(){m_bTagged = false;}
-  
+
 
   void SeekOn(){m_iFlags |= seek;}
   void ArriveOn(){m_iFlags |= arrive;}
@@ -150,7 +150,7 @@ public:
   void SeparationOn(){m_iFlags |= separation;}
   void InterposeOn(double d){m_iFlags |= interpose; m_dInterposeDist = d;}
 
-  
+
   void SeekOff()  {if(On(seek))   m_iFlags ^=seek;}
   void ArriveOff(){if(On(arrive)) m_iFlags ^=arrive;}
   void PursuitOff(){if(On(pursuit)) m_iFlags ^=pursuit;}

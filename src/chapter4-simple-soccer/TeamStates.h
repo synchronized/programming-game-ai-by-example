@@ -11,8 +11,8 @@
 //------------------------------------------------------------------------
 #include <string>
 
-#include "FSM/State.h"
-#include "Messaging/Telegram.h"
+#include "fsm/State.h"
+#include "messaging/Telegram.h"
 
 
 class SoccerTeam;
@@ -23,9 +23,9 @@ class SoccerTeam;
 
 //------------------------------------------------------------------------
 class Attacking : public State<SoccerTeam>
-{ 
+{
 private:
-  
+
   Attacking(){}
 
 public:
@@ -44,9 +44,9 @@ public:
 
 //------------------------------------------------------------------------
 class Defending : public State<SoccerTeam>
-{ 
+{
 private:
-  
+
   Defending(){}
 
 public:
@@ -65,16 +65,16 @@ public:
 
 //------------------------------------------------------------------------
 class PrepareForKickOff : public State<SoccerTeam>
-{ 
+{
 private:
-  
+
   PrepareForKickOff(){}
 
 public:
 
     //this is a singleton
   static PrepareForKickOff* Instance();
-  
+
   void Enter(SoccerTeam* team);
 
   void Execute(SoccerTeam* team);

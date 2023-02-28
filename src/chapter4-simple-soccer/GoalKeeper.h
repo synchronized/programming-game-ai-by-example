@@ -9,29 +9,27 @@
 //  Author: Mat Buckland 2003 (fup@ai-junkie.com)
 //
 //------------------------------------------------------------------------
-#include "2D/Vector2D.h"
 #include "PlayerBase.h"
-#include "FSM/StateMachine.h"
+
+#include "2d/Vector2D.h"
+#include "fsm/StateMachine.h"
 
 class PlayerBase;
-
-
-
 
 class GoalKeeper : public PlayerBase
 {
 private:
-  
+
    //an instance of the state machine class
   StateMachine<GoalKeeper>*  m_pStateMachine;
-  
+
   //this vector is updated to point towards the ball and is used when
   //rendering the goalkeeper (instead of the underlaying vehicle's heading)
   //to ensure he always appears to be watching the ball
   Vector2D   m_vLookAt;
 
 public:
-  
+
    GoalKeeper(SoccerTeam*        home_team,
               int                home_region,
               State<GoalKeeper>* start_state,
@@ -51,7 +49,7 @@ public:
    bool        HandleMessage(const Telegram& msg);
 
 
-   //returns true if the ball comes close enough for the keeper to 
+   //returns true if the ball comes close enough for the keeper to
    //consider intercepting
    bool        BallWithinRangeForIntercept()const;
 
@@ -69,7 +67,7 @@ public:
 
    StateMachine<GoalKeeper>* GetFSM()const{return m_pStateMachine;}
 
-   
+
    Vector2D    LookAt()const{return m_vLookAt;}
    void        SetLookAt(Vector2D v){m_vLookAt=v;}
 };

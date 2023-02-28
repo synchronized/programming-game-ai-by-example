@@ -1,11 +1,12 @@
 #include "SteeringBehaviors.h"
 #include "PlayerBase.h"
-#include "2D/Transformations.h"
-#include "misc/utils.h"
 #include "SoccerTeam.h"
-#include "misc/autolist.h"
 #include "ParamLoader.h"
 #include "SoccerBall.h"
+
+#include "2d/Transformations.h"
+#include "misc/Autolist.h"
+#include "misc/Utils.h"
 
 
 using std::string;
@@ -17,7 +18,7 @@ using std::vector;
 SteeringBehaviors::SteeringBehaviors(PlayerBase*  agent,
                                      SoccerPitch* world,
                                      SoccerBall*  ball):
-                                  
+
              m_pPlayer(agent),
              m_iFlags(0),
              m_dMultSeparation(Prm.SeparationCoefficient),
@@ -31,7 +32,7 @@ SteeringBehaviors::SteeringBehaviors(PlayerBase*  agent,
 
 //--------------------- AccumulateForce ----------------------------------
 //
-//  This function calculates how much of its max steering force the 
+//  This function calculates how much of its max steering force the
 //  vehicle has left to apply and then applies that amount of the
 //  force to add.
 //------------------------------------------------------------------------
@@ -47,26 +48,26 @@ bool SteeringBehaviors::AccumulateForce(Vector2D &sf, Vector2D ForceToAdd)
 
   //calculate the magnitude of the force we want to add
   double MagnitudeToAdd = ForceToAdd.Length();
-  
-  //now calculate how much of the force we can really add  
+
+  //now calculate how much of the force we can really add
   if (MagnitudeToAdd > magnitudeRemaining)
   {
     MagnitudeToAdd = magnitudeRemaining;
   }
 
   //add it to the steering force
-  sf += (Vec2DNormalize(ForceToAdd) * MagnitudeToAdd); 
-  
+  sf += (Vec2DNormalize(ForceToAdd) * MagnitudeToAdd);
+
   return true;
 }
 
 //---------------------- Calculate ---------------------------------------
 //
 //  calculates the overall steering force based on the currently active
-//  steering behaviors. 
+//  steering behaviors.
 //------------------------------------------------------------------------
 Vector2D SteeringBehaviors::Calculate()
-{                                                                         
+{
   //reset the force
   m_vSteeringForce.Zero();
 
@@ -83,13 +84,13 @@ Vector2D SteeringBehaviors::Calculate()
 //
 //  this method calls each active steering behavior and acumulates their
 //  forces until the max steering force magnitude is reached at which
-//  time the function returns the steering force accumulated to that 
+//  time the function returns the steering force accumulated to that
 //  point
 //------------------------------------------------------------------------
 Vector2D SteeringBehaviors::SumForces()
 {
    Vector2D force;
-  
+
   //the soccer players must always tag their neighbors
    FindNeighbours();
 
@@ -98,7 +99,7 @@ Vector2D SteeringBehaviors::SumForces()
     force += Separation() * m_dMultSeparation;
 
     if (!AccumulateForce(m_vSteeringForce, force)) return m_vSteeringForce;
-  }    
+  }
 
   if (On(seek))
   {
@@ -158,7 +159,7 @@ double SteeringBehaviors::SideComponent()
 //------------------------------------------------------------------------
 Vector2D SteeringBehaviors::Seek(Vector2D target)
 {
- 
+
   Vector2D DesiredVelocity = Vec2DNormalize(target - m_pPlayer->Pos())
                             * m_pPlayer->MaxSpeed();
 
@@ -187,14 +188,14 @@ Vector2D SteeringBehaviors::Arrive(Vector2D    target,
 
     //calculate the speed required to reach the target given the desired
     //deceleration
-    double speed =  dist / ((double)deceleration * DecelerationTweaker);                    
+    double speed =  dist / ((double)deceleration * DecelerationTweaker);
 
     //make sure the velocity does not exceed the max
-    speed = min(speed, m_pPlayer->MaxSpeed());
+    speed = std::min(speed, m_pPlayer->MaxSpeed());
 
-    //from here proceed just like Seek except we don't need to normalize 
+    //from here proceed just like Seek except we don't need to normalize
     //the ToTarget vector because we have already gone to the trouble
-    //of calculating its length: dist. 
+    //of calculating its length: dist.
     Vector2D DesiredVelocity =  ToTarget * speed / dist;
 
     return (DesiredVelocity - m_pPlayer->Velocity());
@@ -206,15 +207,15 @@ Vector2D SteeringBehaviors::Arrive(Vector2D    target,
 
 //------------------------------ Pursuit ---------------------------------
 //
-//  this behavior creates a force that steers the agent towards the 
+//  this behavior creates a force that steers the agent towards the
 //  ball
 //------------------------------------------------------------------------
 Vector2D SteeringBehaviors::Pursuit(const SoccerBall* ball)
 {
   Vector2D ToBall = ball->Pos() - m_pPlayer->Pos();
- 
+
   //the lookahead time is proportional to the distance between the ball
-  //and the pursuer; 
+  //and the pursuer;
   double LookAheadTime = 0.0;
 
   if (ball->Speed() != 0.0)
@@ -259,10 +260,10 @@ void SteeringBehaviors::FindNeighbours()
 // this calculates a force repelling from the other neighbors
 //------------------------------------------------------------------------
 Vector2D SteeringBehaviors::Separation()
-{  
+{
    //iterate through all the neighbors and calculate the vector from the
   Vector2D SteeringForce;
-  
+
   std::list<PlayerBase*>& AllPlayers = AutoList<PlayerBase>::GetAllMembers();
   std::list<PlayerBase*>::iterator curPlyr;
   for (curPlyr = AllPlayers.begin(); curPlyr!=AllPlayers.end(); ++curPlyr)
@@ -273,7 +274,7 @@ Vector2D SteeringBehaviors::Separation()
     {
       Vector2D ToAgent = m_pPlayer->Pos() - (*curPlyr)->Pos();
 
-      //scale the force inversely proportional to the agents distance  
+      //scale the force inversely proportional to the agents distance
       //from its neighbor.
       SteeringForce += Vec2DNormalize(ToAgent)/ToAgent.Length();
     }
@@ -282,17 +283,17 @@ Vector2D SteeringBehaviors::Separation()
   return SteeringForce;
 }
 
-  
+
 //--------------------------- Interpose ----------------------------------
 //
-//  Given an opponent and an object position this method returns a 
+//  Given an opponent and an object position this method returns a
 //  force that attempts to position the agent between them
 //------------------------------------------------------------------------
 Vector2D SteeringBehaviors::Interpose(const SoccerBall* ball,
                                       Vector2D  target,
                                       double     DistFromTarget)
 {
-  return Arrive(target + Vec2DNormalize(ball->Pos() - target) * 
+  return Arrive(target + Vec2DNormalize(ball->Pos() - target) *
                 DistFromTarget, normal);
 }
 
@@ -301,14 +302,12 @@ Vector2D SteeringBehaviors::Interpose(const SoccerBall* ball,
 //
 //------------------------------------------------------------------------
 void SteeringBehaviors::RenderAids( )
-{ 
+{
   //render the steering force
   gdi->RedPen();
 
   gdi->Line(m_pPlayer->Pos(), m_pPlayer->Pos() + m_vSteeringForce * 20);
 
 
-  
+
 }
-
-

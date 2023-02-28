@@ -14,9 +14,9 @@
 //------------------------------------------------------------------------
 #include <vector>
 
-#include "Game/MovingEntity.h"
 #include "constants.h"
 
+#include "game/MovingEntity.h"
 
 class Wall2D;
 class PlayerBase;
@@ -30,21 +30,21 @@ private:
   Vector2D                  m_vOldPos;
 
   //a local reference to the Walls that make up the pitch boundary
-  const std::vector<Wall2D>& m_PitchBoundary;                                      
+  const std::vector<Wall2D>& m_PitchBoundary;
 
 
-  
+
 
 public:
-    //tests to see if the ball has collided with a ball and reflects 
+    //tests to see if the ball has collided with a ball and reflects
   //the ball's velocity accordingly
   void TestCollisionWithWalls(const std::vector<Wall2D>& walls);
 
-  SoccerBall(Vector2D           pos,            
+  SoccerBall(Vector2D           pos,
              double               BallSize,
              double               mass,
              std::vector<Wall2D>& PitchBoundary):
-  
+
       //set up the base class
       MovingEntity(pos,
                   BallSize,
@@ -57,7 +57,7 @@ public:
                   0),                  //max force - unused
      m_PitchBoundary(PitchBoundary)
   {}
-  
+
   //implement base class Update
   void      Update();
 
@@ -83,10 +83,10 @@ public:
   //this is used by players and goalkeepers to 'trap' a ball -- to stop
   //it dead. That player is then assumed to be in possession of the ball
   //and m_pOwner is adjusted accordingly
-  void      Trap(){m_vVelocity.Zero();}  
+  void      Trap(){m_vVelocity.Zero();}
 
   Vector2D  OldPos()const{return m_vOldPos;}
-  
+
   //this places the ball at the desired location and sets its velocity to zero
   void      PlaceAtPosition(Vector2D NewPos);
 };

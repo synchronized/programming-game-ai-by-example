@@ -1,18 +1,18 @@
 #include "GoalKeeperStates.h"
-#include "Debug/DebugConsole.h"
 #include "SoccerPitch.h"
 #include "PlayerBase.h"
 #include "GoalKeeper.h"
 #include "SteeringBehaviors.h"
 #include "SoccerTeam.h"
 #include "Goal.h"
-#include "2D/geometry.h"
 #include "FieldPlayer.h"
 #include "ParamLoader.h"
-#include "Messaging/Telegram.h"
-#include "Messaging/MessageDispatcher.h"
 #include "SoccerMessages.h"
 
+#include "2d/Geometry.h"
+#include "debug/DebugConsole.h"
+#include "messaging/Telegram.h"
+#include "messaging/MessageDispatcher.h"
 
 //uncomment to send state info to debug window
 //#define GOALY_STATE_INFO_ON
@@ -36,7 +36,7 @@ bool GlobalKeeperState::OnMessage(GoalKeeper* keeper, const Telegram& telegram)
     case Msg_GoHome:
     {
       keeper->SetDefaultHomeRegion();
-      
+
       keeper->GetFSM()->ChangeState(ReturnHome::Instance());
     }
 
@@ -86,7 +86,7 @@ void TendGoal::Enter(GoalKeeper* keeper)
 void TendGoal::Execute(GoalKeeper* keeper)
 {
   //the rear interpose target will change as the ball's position changes
-  //so it must be updated each update-step 
+  //so it must be updated each update-step
   keeper->Steering()->SetTarget(keeper->GetRearInterposeTarget());
 
   //if the ball comes in range the keeper traps it and then changes state
@@ -181,7 +181,7 @@ InterceptBall* InterceptBall::Instance()
 
 void InterceptBall::Enter(GoalKeeper* keeper)
 {
-  keeper->Steering()->PursuitOn();  
+  keeper->Steering()->PursuitOn();
 
     #ifdef GOALY_STATE_INFO_ON
     debug_con << "Goaly " << keeper->ID() << " enters InterceptBall" <<  "";
@@ -189,7 +189,7 @@ void InterceptBall::Enter(GoalKeeper* keeper)
 }
 
 void InterceptBall::Execute(GoalKeeper* keeper)
-{ 
+{
   //if the goalkeeper moves to far away from the goal he should return to his
   //home region UNLESS he is the closest player to the ball, in which case,
   //he should keep trying to intercept it.
@@ -199,13 +199,13 @@ void InterceptBall::Execute(GoalKeeper* keeper)
 
     return;
   }
-  
-  //if the ball becomes in range of the goalkeeper's hands he traps the 
+
+  //if the ball becomes in range of the goalkeeper's hands he traps the
   //ball and puts it back in play
   if (keeper->BallWithinKeeperRange())
   {
     keeper->Ball()->Trap();
-    
+
     keeper->Pitch()->SetGoalKeeperHasBall(true);
 
     keeper->GetFSM()->ChangeState(PutBallBackInPlay::Instance());
@@ -247,7 +247,7 @@ void PutBallBackInPlay::Execute(GoalKeeper* keeper)
 {
   PlayerBase*  receiver = NULL;
   Vector2D     BallTarget;
-    
+
   //test if there are players further forward on the field we might
   //be able to pass to. If so, make a pass.
   if (keeper->Team()->FindPass(keeper,
@@ -255,12 +255,12 @@ void PutBallBackInPlay::Execute(GoalKeeper* keeper)
                               BallTarget,
                               Prm.MaxPassingForce,
                               Prm.GoalkeeperMinPassDist))
-  {     
-    //make the pass   
+  {
+    //make the pass
     keeper->Ball()->Kick(Vec2DNormalize(BallTarget - keeper->Ball()->Pos()),
                          Prm.MaxPassingForce);
 
-    //goalkeeper no longer has ball 
+    //goalkeeper no longer has ball
     keeper->Pitch()->SetGoalKeeperHasBall(false);
 
     //let the receiving player know the ball's comin' at him
@@ -269,13 +269,12 @@ void PutBallBackInPlay::Execute(GoalKeeper* keeper)
                           receiver->ID(),
                           Msg_ReceiveBall,
                           &BallTarget);
-    
-    //go back to tending the goal   
+
+    //go back to tending the goal
     keeper->GetFSM()->ChangeState(TendGoal::Instance());
 
     return;
-  }  
+  }
 
   keeper->SetVelocity(Vector2D());
 }
-

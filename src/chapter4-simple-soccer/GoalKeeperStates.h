@@ -11,10 +11,10 @@
 //
 //------------------------------------------------------------------------
 #include <string>
-#include "FSM/State.h"
-#include "Messaging/Telegram.h"
 #include "constants.h"
 
+#include "fsm/State.h"
+#include "messaging/Telegram.h"
 
 class GoalKeeper;
 class SoccerPitch;
@@ -23,7 +23,7 @@ class SoccerPitch;
 class GlobalKeeperState: public State<GoalKeeper>
 {
 private:
-  
+
   GlobalKeeperState(){}
 
 public:
@@ -45,7 +45,7 @@ public:
 class TendGoal: public State<GoalKeeper>
 {
 private:
-  
+
   TendGoal(){}
 
 public:
@@ -66,7 +66,7 @@ public:
 class InterceptBall: public State<GoalKeeper>
 {
 private:
-  
+
   InterceptBall(){}
 
 public:
@@ -87,7 +87,7 @@ public:
 class ReturnHome: public State<GoalKeeper>
 {
 private:
-  
+
   ReturnHome(){}
 
 public:
@@ -108,7 +108,7 @@ public:
 class PutBallBackInPlay: public State<GoalKeeper>
 {
 private:
-  
+
   PutBallBackInPlay(){}
 
 public:
