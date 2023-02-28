@@ -15,10 +15,10 @@
 #include <iostream>
 
 #include "misc/Cgdi.h"
-#include "misc/utils.h"
+#include "misc/Utils.h"
 #include "misc/Stream_Utility_Functions.h"
-#include "Graph/GraphAlgorithms.h"
-#include "Graph/AStarHeuristicPolicies.h"
+#include "graph/GraphAlgorithms.h"
+#include "graph/AStarHeuristicPolicies.h"
 
 
 
@@ -65,18 +65,18 @@ void GraphHelper_AddAllNeighboursToGridNode(graph_type& graph,
                 double dist = PosNode.Distance(PosNeighbour);
 
                 //this neighbour is okay so it can be added
-                graph_type::EdgeType NewEdge(row*NumCellsX+col,
-                                             nodeY*NumCellsX+nodeX,
-                                             dist);
+                typename graph_type::EdgeType NewEdge(row*NumCellsX+col,
+                                                      nodeY*NumCellsX+nodeX,
+                                                      dist);
                 graph.AddEdge(NewEdge);
 
                 //if graph is not a diagraph then an edge needs to be added going
                 //in the other direction
                 if (!graph.isDigraph())
                 {
-                    graph_type::EdgeType NewEdge(nodeY*NumCellsX+nodeX,
-                                                 row*NumCellsX+col,
-                                                 dist);
+                    typename graph_type::EdgeType NewEdge(nodeY*NumCellsX+nodeX,
+                                                          row*NumCellsX+col,
+                                                          dist);
                     graph.AddEdge(NewEdge);
                 }
             }
@@ -144,24 +144,17 @@ void GraphHelper_DrawUsingGDI(const graph_type& graph, int color, bool DrawNodeI
     gdi->SetPenColor(color);
 
     //draw the nodes
-    graph_type::ConstNodeIterator NodeItr(graph);
-    for (const graph_type::NodeType* pN=NodeItr.begin();
-         !NodeItr.end();
-         pN=NodeItr.next())
-    {
+    typename graph_type::ConstNodeIterator NodeItr(graph);
+    for (auto pN=NodeItr.begin(); !NodeItr.end(); pN=NodeItr.next()) {
         gdi->Circle(pN->Pos(), 2);
 
-        if (DrawNodeIDs)
-        {
+        if (DrawNodeIDs) {
             gdi->TextColor(200,200,200);
             gdi->TextAtPos((int)pN->Pos().x+5, (int)pN->Pos().y-5, ttos(pN->Index()));
         }
 
-        graph_type::ConstEdgeIterator EdgeItr(graph, pN->Index());
-        for (const graph_type::EdgeType* pE=EdgeItr.begin();
-             !EdgeItr.end();
-             pE=EdgeItr.next())
-        {
+        typename graph_type::ConstEdgeIterator EdgeItr(graph, pN->Index());
+        for (auto pE=EdgeItr.begin(); !EdgeItr.end(); pE=EdgeItr.next()) {
             gdi->Line(pN->Pos(), graph.GetNode(pE->To()).Pos());
         }
     }
@@ -181,11 +174,8 @@ void WeightNavGraphNodeEdges(graph_type& graph, int node, double weight)
     assert(node < graph.NumNodes());
 
     //set the cost for each edge
-    graph_type::ConstEdgeIterator ConstEdgeItr(graph, node);
-    for (const graph_type::EdgeType* pE=ConstEdgeItr.begin();
-         !ConstEdgeItr.end();
-         pE=ConstEdgeItr.next())
-    {
+    typename graph_type::ConstEdgeIterator ConstEdgeItr(graph, node);
+    for (auto pE=ConstEdgeItr.begin(); !ConstEdgeItr.end(); pE=ConstEdgeItr.next()) {
         //calculate the distance between nodes
         double dist = Vec2DDistance(graph.GetNode(pE->From()).Pos(),
                                     graph.GetNode(pE->To()).Pos());
@@ -221,7 +211,10 @@ std::vector<std::vector<int> > CreateAllPairsTable(const graph_type& G)
         //calculate the SPT for this node
         Graph_SearchDijkstra<graph_type> search(G, source);
 
-        std::vector<const graph_type::EdgeType*> spt = search.GetSPT();
+        //std::vector<const graph_type::EdgeType*> spt = search.GetSPT(); //not ok
+        //typename Graph_SearchDijkstra<graph_type>::VectorCEdge spt = search.GetSPT();
+        //std::vector<const typename Graph_SearchDijkstra<graph_type>::Edge*> spt = search.GetSPT();
+        auto spt = search.GetSPT();
 
         //now we have the SPT it's easy to work backwards through it to find
         //the shortest paths from each node to this source node
@@ -263,17 +256,14 @@ std::vector<std::vector<double> > CreateAllPairsCostsTable(const graph_type& G)
     std::vector<double> row(G.NumNodes(), 0.0);
     std::vector<std::vector<double> > PathCosts(G.NumNodes(), row);
 
-    for (int source=0; source<G.NumNodes(); ++source)
-    {
+    for (int source=0; source<G.NumNodes(); ++source) {
         //do the search
         Graph_SearchDijkstra<graph_type> search(G, source);
 
         //iterate through every node in the graph and grab the cost to travel to
         //that node
-        for (int target = 0; target<G.NumNodes(); ++target)
-        {
-            if (source != target)
-            {
+        for (int target = 0; target<G.NumNodes(); ++target) {
+            if (source != target) {
                 PathCosts[source][target]= search.GetCostToNode(target);
             }
         }//next target node
@@ -296,13 +286,10 @@ double CalculateAverageGraphEdgeLength(const graph_type& G)
     double TotalLength = 0;
     int NumEdgesCounted = 0;
 
-    graph_type::ConstNodeIterator NodeItr(G);
-    const graph_type::NodeType* pN;
-    for (pN = NodeItr.begin(); !NodeItr.end(); pN=NodeItr.next())
-    {
-        graph_type::ConstEdgeIterator EdgeItr(G, pN->Index());
-        for (const graph_type::EdgeType* pE = EdgeItr.begin(); !EdgeItr.end(); pE=EdgeItr.next())
-        {
+    typename graph_type::ConstNodeIterator NodeItr(G);
+    for (auto pN = NodeItr.begin(); !NodeItr.end(); pN=NodeItr.next()) {
+        typename graph_type::ConstEdgeIterator EdgeItr(G, pN->Index());
+        for (auto pE = EdgeItr.begin(); !EdgeItr.end(); pE=EdgeItr.next()) {
             //increment edge counter
             ++NumEdgesCounted;
 
@@ -323,13 +310,10 @@ double GetCostliestGraphEdge(const graph_type& G)
 {
     double greatest = MinDouble;
 
-    graph_type::ConstNodeIterator NodeItr(G);
-    const graph_type::NodeType* pN;
-    for (pN = NodeItr.begin(); !NodeItr.end(); pN=NodeItr.next())
-    {
-        graph_type::ConstEdgeIterator EdgeItr(G, pN->Index());
-        for (const graph_type::EdgeType* pE = EdgeItr.begin(); !EdgeItr.end(); pE=EdgeItr.next())
-        {
+    typename graph_type::ConstNodeIterator NodeItr(G);
+    for (auto pN = NodeItr.begin(); !NodeItr.end(); pN=NodeItr.next()) {
+        typename graph_type::ConstEdgeIterator EdgeItr(G, pN->Index());
+        for (auto pE = EdgeItr.begin(); !EdgeItr.end(); pE=EdgeItr.next()) {
             if (pE->Cost() > greatest)greatest = pE->Cost();
         }
     }

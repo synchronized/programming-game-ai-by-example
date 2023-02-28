@@ -2,21 +2,22 @@
 
 #include <windows.h>
 #include <time.h>
+#include <winuser.h>
 
 //need to include this for the toolbar stuff
 #include <commctrl.h>
-#pragma comment(lib, "comctl32.lib")
 
 #include "constants.h"
-#include "misc/utils.h"
-#include "Time/PrecisionTimer.h"
+#include "Resource.h"
 #include "Pathfinder.h"
-#include "resource.h"
+
+#include "misc/Utils.h"
 #include "misc/Cgdi.h"
 #include "misc/WindowUtils.h"
+#include "time/PrecisionTimer.h"
 
 
-//need to define a custom message so that the backbuffer can be resized to 
+//need to define a custom message so that the backbuffer can be resized to
 //accomodate the toolbar
 #define UM_TOOLBAR_HAS_BEEN_CREATED (WM_USER + 33)
 
@@ -48,11 +49,11 @@ void RedrawDisplay(HWND hwnd)
 //-----------------------------------------------------------------------------
 void ResizeToCorrectClientArea(HWND hwnd, int AccumulativeToolbarHeight, RECT ClientArea)
 {
- 
+
   AdjustWindowRectEx(&ClientArea,
                      WS_OVERLAPPED | WS_VISIBLE | WS_CAPTION | WS_SYSMENU,
                      true,
-                     NULL);
+                     0);
 
 
   SetWindowPos(hwnd,
@@ -66,7 +67,7 @@ void ResizeToCorrectClientArea(HWND hwnd, int AccumulativeToolbarHeight, RECT Cl
 }
 
 //---------------------------- WindowProc ---------------------------------
-//	
+//
 //	This is the callback function which handles all the windows messages
 //-------------------------------------------------------------------------
 
@@ -75,9 +76,9 @@ LRESULT CALLBACK WindowProc (HWND   hwnd,
                              WPARAM wParam,
                              LPARAM lParam)
 {
- 
+
    //these hold the dimensions of the client window area
-	 static int cxClient, cyClient; 
+	 static int cxClient, cyClient;
 
 	 //used to create the back buffer
    static HDC		hdcBackBuffer;
@@ -97,14 +98,14 @@ LRESULT CALLBACK WindowProc (HWND   hwnd,
 
     switch (msg)
     {
-	
+
 		//A WM_CREATE msg is sent when your application window is first
 		//created
     case WM_CREATE:
-      { 
+      {
          //seed random number generator
-         srand((unsigned) time(NULL));   
-         
+         srand((unsigned) time(NULL));
+
          //---------------create a surface to render to(backbuffer)
 
          //create a memory device context
@@ -117,13 +118,13 @@ LRESULT CALLBACK WindowProc (HWND   hwnd,
                                           cxClient,
                                           cyClient);
 
-			  
+
          //select the bitmap into the memory device context
 			   hOldBitmap = (HBITMAP)SelectObject(hdcBackBuffer, hBitmap);
 
          //don't forget to release the DC
-         ReleaseDC(hwnd, hdc);  
-         
+         ReleaseDC(hwnd, hdc);
+
          //create the controller
          g_Pathfinder = new Pathfinder();
 
@@ -135,7 +136,7 @@ LRESULT CALLBACK WindowProc (HWND   hwnd,
 
       case UM_TOOLBAR_HAS_BEEN_CREATED:
       {
-        
+
           //get the height of the toolbar
          RECT rectToolbar;
          GetWindowRect(g_hwndToolbar, &rectToolbar);
@@ -148,7 +149,7 @@ LRESULT CALLBACK WindowProc (HWND   hwnd,
 
         ResizeToCorrectClientArea(hwnd, ToolBarHeight, rectClientWindow);
 
-         
+
         //let the toolbar know about the resize
         SendMessage(g_hwndToolbar, WM_SIZE, wParam, lParam);
 
@@ -168,12 +169,12 @@ LRESULT CALLBACK WindowProc (HWND   hwnd,
          hBitmap = CreateCompatibleBitmap(hdc,
                                           rectClientWindow.right,
                                           rectClientWindow.bottom);
-			  
+
          //select the bitmap into the memory device context
 			   hOldBitmap = (HBITMAP)SelectObject(hdcBackBuffer, hBitmap);
 
          //don't forget to release the DC
-         ReleaseDC(hwnd, hdc);      
+         ReleaseDC(hwnd, hdc);
       }
 
       break;
@@ -183,15 +184,15 @@ LRESULT CALLBACK WindowProc (HWND   hwnd,
         switch(wParam)
         {
          case VK_ESCAPE:
-                     
-            SendMessage(hwnd, WM_DESTROY, NULL, NULL); break;
+
+            SendMessage(hwnd, WM_DESTROY, 0, 0); break;
 
           case 'G':
-                     
+
             g_Pathfinder->ToggleShowGraph(); break;
 
           case 'T':
-                     
+
             g_Pathfinder->ToggleShowTiles(); break;
 
         }//end switch
@@ -202,16 +203,16 @@ LRESULT CALLBACK WindowProc (HWND   hwnd,
 
       break;
 
-      
+
     case WM_LBUTTONDOWN:
     {
 
       g_Pathfinder->PaintTerrain(MAKEPOINTS(lParam));
 
       RedrawWindowRect(hwnd, false, rectClientWindow);
-     
+
     }
-    
+
     break;
 
 
@@ -296,7 +297,7 @@ LRESULT CALLBACK WindowProc (HWND   hwnd,
         break;
 
       case ID_MENU_LOAD:
-          
+
           FileOpenDlg(hwnd, szFileName, szTitleName, "pathfinder files (*.map)", "map");
 
           if (strlen(szTitleName) > 0)
@@ -321,11 +322,11 @@ LRESULT CALLBACK WindowProc (HWND   hwnd,
         {
           g_Pathfinder->Save(szTitleName);
         }
-        
+
         break;
 
       case ID_MENU_NEW:
-        
+
          //create the graph
          g_Pathfinder->CreateGraph(NumCellsX, NumCellsY);
 
@@ -376,12 +377,12 @@ LRESULT CALLBACK WindowProc (HWND   hwnd,
       RedrawWindowRect(hwnd, false, rectClientWindow);
     }
 
-    
+
     case WM_PAINT:
       {
- 		       
+
          PAINTSTRUCT ps;
-          
+
          BeginPaint (hwnd, &ps);
 
         //fill the backbuffer with white
@@ -391,10 +392,10 @@ LRESULT CALLBACK WindowProc (HWND   hwnd,
                 cxClient,
                 cyClient,
                 NULL,
-                NULL,
-                NULL,
+                0,
+                0,
                 WHITENESS);
-          
+
         gdi->StartDrawing(hdcBackBuffer);
 
         g_Pathfinder->Render();
@@ -403,8 +404,8 @@ LRESULT CALLBACK WindowProc (HWND   hwnd,
 
 
          //now blit backbuffer to front
-			   BitBlt(ps.hdc, 0, 0, cxClient, cyClient, hdcBackBuffer, 0, 0, SRCCOPY); 
-          
+			   BitBlt(ps.hdc, 0, 0, cxClient, cyClient, hdcBackBuffer, 0, 0, SRCCOPY);
+
          EndPaint (hwnd, &ps);
 
       }
@@ -422,7 +423,7 @@ LRESULT CALLBACK WindowProc (HWND   hwnd,
 			  SelectObject(hdcBackBuffer, hOldBitmap);
 
         //don't forget to do this or you will get resource leaks
-        DeleteObject(hBitmap); 
+        DeleteObject(hBitmap);
 
 			  //get the DC for the application
         HDC hdc = GetDC(hwnd);
@@ -434,13 +435,13 @@ LRESULT CALLBACK WindowProc (HWND   hwnd,
                                         rectClientWindow.bottom);
 
 			  ReleaseDC(hwnd, hdc);
-			  
+
 			  //select the new bitmap into the DC
         SelectObject(hdcBackBuffer, hBitmap);
       }
 
       break;
-          
+
 		 case WM_DESTROY:
 			 {
 
@@ -448,10 +449,10 @@ LRESULT CALLBACK WindowProc (HWND   hwnd,
          SelectObject(hdcBackBuffer, hOldBitmap);
 
          DeleteDC(hdcBackBuffer);
-         DeleteObject(hBitmap); 
+         DeleteObject(hBitmap);
          DeleteObject(hOldBitmap);
-         
-         // kill the application, this sends a WM_QUIT message  
+
+         // kill the application, this sends a WM_QUIT message
 				 PostQuitMessage (0);
 			 }
 
@@ -460,7 +461,7 @@ LRESULT CALLBACK WindowProc (HWND   hwnd,
      }//end switch
 
 
-     //this is where all the messages not specifically handled by our 
+     //this is where all the messages not specifically handled by our
 		 //winproc are sent to be processed
 		 return DefWindowProc (hwnd, msg, wParam, lParam);
 }
@@ -472,7 +473,7 @@ HWND CreateToolBar(HWND hwndParent, HINSTANCE hinstMain)
 {
 
   const int NumButtons = 11;
-  
+
   //load in the common ctrls from the dll
   INITCOMMONCONTROLSEX cc;
   cc.dwSize = sizeof(INITCOMMONCONTROLSEX);
@@ -484,20 +485,20 @@ HWND CreateToolBar(HWND hwndParent, HINSTANCE hinstMain)
 
     return 0;
   }
-    
+
   //create the toolbar
-  HWND hwndToolBar = CreateWindowEx(NULL,                
-                             TOOLBARCLASSNAME,   
-                             (LPSTR) NULL,           
-                             WS_CHILD | WS_VISIBLE | CCS_BOTTOM,  
+  HWND hwndToolBar = CreateWindowEx(0,
+                             TOOLBARCLASSNAME,
+                             (LPSTR) NULL,
+                             WS_CHILD | WS_VISIBLE | CCS_BOTTOM,
                              0,
-                             0,                    
-                             0,           
-                             0,          
-                             hwndParent,                 
-                             (HMENU) IDR_TOOLBAR1,                 
-                             hinstMain,            
-                             NULL);               
+                             0,
+                             0,
+                             0,
+                             hwndParent,
+                             (HMENU) IDR_TOOLBAR1,
+                             hinstMain,
+                             NULL);
 
   //make sure the window creation has gone OK
   if(!hwndToolBar)
@@ -512,7 +513,7 @@ HWND CreateToolBar(HWND hwndParent, HINSTANCE hinstMain)
   //add bitmaps to the buttons
   TBADDBITMAP tb;
   tb.hInst = NULL;
-  tb.nID = (UINT_PTR)LoadBitmap((HINSTANCE)GetWindowLong(hwndParent, GWL_HINSTANCE),MAKEINTRESOURCE(IDR_TOOLBAR1));
+  tb.nID = (UINT_PTR)LoadBitmap((HINSTANCE)GetWindowLong(hwndParent, GWLP_HINSTANCE),MAKEINTRESOURCE(IDR_TOOLBAR1));
 
   int idx = SendMessage (hwndToolBar, TB_ADDBITMAP, NumButtons, (LPARAM)&tb);
 
@@ -523,79 +524,79 @@ HWND CreateToolBar(HWND hwndParent, HINSTANCE hinstMain)
   button[0].idCommand = ID_BUTTON_STOP;
   button[0].fsState   = TBSTATE_ENABLED;
   button[0].fsStyle   = TBSTYLE_CHECKGROUP;
-  button[0].dwData    = NULL;
-  button[0].iString   = NULL;
+  button[0].dwData    = 0;
+  button[0].iString   = 0;
 
   button[1].iBitmap   = 1;
   button[1].idCommand = ID_BUTTON_START;
   button[1].fsState   = TBSTATE_ENABLED;
   button[1].fsStyle   = TBSTYLE_CHECKGROUP;
-  button[1].dwData    = NULL;
-  button[1].iString   = NULL;
+  button[1].dwData    = 0;
+  button[1].iString   = 0;
 
   button[2].iBitmap   = 2;
   button[2].idCommand = ID_BUTTON_OBSTACLE;
   button[2].fsState   = TBSTATE_ENABLED;
   button[2].fsStyle   = TBSTYLE_CHECKGROUP;
-  button[2].dwData    = NULL;
-  button[2].iString   = NULL;
+  button[2].dwData    = 0;
+  button[2].iString   = 0;
 
   button[3].iBitmap   = 3;
   button[3].idCommand = ID_BUTTON_MUD;
   button[3].fsState   = TBSTATE_ENABLED;
   button[3].fsStyle   = TBSTYLE_CHECKGROUP;
-  button[3].dwData    = NULL;
-  button[3].iString   = NULL;
+  button[3].dwData    = 0;
+  button[3].iString   = 0;
 
   button[4].iBitmap   = 4;
   button[4].idCommand = ID_BUTTON_WATER;
   button[4].fsState   = TBSTATE_ENABLED;
   button[4].fsStyle   = TBSTYLE_CHECKGROUP;
-  button[4].dwData    = NULL;
-  button[4].iString   = NULL;
+  button[4].dwData    = 0;
+  button[4].iString   = 0;
 
   button[5].iBitmap   = 5;
   button[5].idCommand = ID_BUTTON_NORMAL;
   button[5].fsState   = TBSTATE_ENABLED;
   button[5].fsStyle   = TBSTYLE_CHECKGROUP;
-  button[5].dwData    = NULL;
-  button[5].iString   = NULL;
+  button[5].dwData    = 0;
+  button[5].iString   = 0;
 
   //this creates a separater
   button[6].iBitmap   = 265;
   button[6].idCommand = 0;
-  button[6].fsState   = NULL;
+  button[6].fsState   = 0;
   button[6].fsStyle   = TBSTYLE_SEP;
-  button[6].dwData    = NULL;
-  button[6].iString   = NULL;
+  button[6].dwData    = 0;
+  button[6].iString   = 0;
 
   button[7].iBitmap   = 6;
   button[7].idCommand = ID_BUTTON_DFS;
   button[7].fsState   = TBSTATE_ENABLED;
   button[7].fsStyle   = TBSTYLE_CHECKGROUP;
-  button[7].dwData    = NULL;
-  button[7].iString   = NULL;
+  button[7].dwData    = 0;
+  button[7].iString   = 0;
 
   button[8].iBitmap   = 7;
   button[8].idCommand = ID_BUTTON_BFS;
   button[8].fsState   = TBSTATE_ENABLED;
   button[8].fsStyle   = TBSTYLE_CHECKGROUP;
-  button[8].dwData    = NULL;
-  button[8].iString   = NULL;
+  button[8].dwData    = 0;
+  button[8].iString   = 0;
 
   button[9].iBitmap   = 8;
   button[9].idCommand = ID_BUTTON_DIJKSTRA;
   button[9].fsState   = TBSTATE_ENABLED;
   button[9].fsStyle   = TBSTYLE_CHECKGROUP;
-  button[9].dwData    = NULL;
-  button[9].iString   = NULL;
+  button[9].dwData    = 0;
+  button[9].iString   = 0;
 
   button[10].iBitmap   = 9;
   button[10].idCommand = ID_BUTTON_ASTAR;
   button[10].fsState   = TBSTATE_ENABLED;
   button[10].fsStyle   = TBSTYLE_CHECKGROUP;
-  button[10].dwData    = NULL;
-  button[10].iString   = NULL;
+  button[10].dwData    = 0;
+  button[10].iString   = 0;
 
 
 
@@ -612,15 +613,15 @@ HWND CreateToolBar(HWND hwndParent, HINSTANCE hinstMain)
 //------------------------------------------------------------------------
 int WINAPI WinMain (HINSTANCE hInstance,
                     HINSTANCE hPrevInstance,
-                    LPSTR     szCmdLine, 
+                    LPSTR     szCmdLine,
                     int       iCmdShow)
 {
      //handle to our window
 		 HWND						hWnd;
-    
+
 		 //our window class structure
 		 WNDCLASSEX     winclass;
-		 
+
      // first fill in the window class stucture
 	   winclass.cbSize        = sizeof(WNDCLASSEX);
 	   winclass.style         = CS_HREDRAW | CS_VREDRAW;
@@ -644,13 +645,13 @@ int WINAPI WinMain (HINSTANCE hInstance,
 			return 0;
 		}
 
-		 //create the window    
-     hWnd = CreateWindowEx (NULL,                 // extended style
+		 //create the window
+     hWnd = CreateWindowEx (0,                 // extended style
                             g_szWindowClassName,  // window class name
                             g_szApplicationName,  // window caption
                             WS_OVERLAPPED | WS_VISIBLE | WS_CAPTION | WS_SYSMENU,  // window style
                             GetSystemMetrics(SM_CXSCREEN)/2 - WindowWidth/2,
-                            GetSystemMetrics(SM_CYSCREEN)/2 - WindowHeight/2,                    
+                            GetSystemMetrics(SM_CYSCREEN)/2 - WindowHeight/2,
                             WindowWidth,           // initial x size
                             WindowHeight,          // initial y size
                             NULL,                 // parent window handle
@@ -667,16 +668,16 @@ int WINAPI WinMain (HINSTANCE hInstance,
   //create the toolbar
   g_hwndToolbar = CreateToolBar(hWnd, hInstance);
 
-  SendMessage(hWnd, UM_TOOLBAR_HAS_BEEN_CREATED, NULL, NULL);
+  SendMessage(hWnd, UM_TOOLBAR_HAS_BEEN_CREATED, 0, 0);
 
   //create the graph
   g_Pathfinder->CreateGraph(NumCellsX, NumCellsY);
-     
+
 
   //enter the message loop
   //this will hold any windows messages
   MSG msg;
-     
+
  	//entry point of our message handler
 	while (GetMessage (&msg, NULL, 0, 0))
   {
@@ -690,5 +691,3 @@ int WINAPI WinMain (HINSTANCE hInstance,
 
   return msg.wParam;
 }
-
-

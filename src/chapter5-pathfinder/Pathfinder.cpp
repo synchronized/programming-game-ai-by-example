@@ -1,10 +1,11 @@
 #include "Pathfinder.h"
-#include "Graph/HandyGraphFunctions.h"
 #include "misc/Cgdi.h"
-#include "Time/PrecisionTimer.h"
 #include "constants.h"
+
 #include "graph/AStarHeuristicPolicies.h"
+#include "graph/HandyGraphFunctions.h"
 #include "misc/Stream_Utility_Functions.h"
+#include "time/PrecisionTimer.h"
 
 
 #include <iostream>
@@ -23,9 +24,9 @@ void Pathfinder::CreateGraph(int CellsUp,
   //get the height of the toolbar
   RECT rectToolbar;
   GetWindowRect(g_hwndToolbar, &rectToolbar);
-  
+
   //get the dimensions of the client area
-  HWND hwndMainWindow = FindWindow(g_szWindowClassName, g_szApplicationName); 
+  HWND hwndMainWindow = FindWindow(g_szWindowClassName, g_szApplicationName);
 
   RECT rect;
   GetClientRect(hwndMainWindow, &rect);
@@ -48,7 +49,7 @@ void Pathfinder::CreateGraph(int CellsUp,
 
   GraphHelper_CreateGrid(*m_pGraph, m_icxClient, m_icyClient, CellsUp, CellsAcross);
 
-  //initialize source and target indexes to mid top and bottom of grid 
+  //initialize source and target indexes to mid top and bottom of grid
   PointToIndex(VectorToPOINTS(Vector2D(m_icxClient/2, m_dCellHeight*2)), m_iTargetCell);
   PointToIndex(VectorToPOINTS(Vector2D(m_icxClient/2, m_icyClient -m_dCellHeight*2)), m_iSourceCell);
 
@@ -66,9 +67,9 @@ void Pathfinder::CreateGraph(int CellsUp,
 bool Pathfinder::PointToIndex(POINTS p, int& NodeIndex)
 {
   //convert p to an index into the graph
-  int x = (int)((double)(p.x)/m_dCellWidth);  
-  int y = (int)((double)(p.y)/m_dCellHeight); 
-  
+  int x = (int)((double)(p.x)/m_dCellWidth);
+  int y = (int)((double)(p.y)/m_dCellHeight);
+
   //make sure the values are legal
   if ( (x>m_iCellsX) || (y>m_iCellsY) )
   {
@@ -100,7 +101,7 @@ double Pathfinder::GetTerrainCost(const brush_type brush)
     default:     return MaxDouble;
   };
 }
-  
+
 //----------------------- PaintTerrain -----------------------------------
 //
 //  this either changes the terrain at position p to whatever the current
@@ -109,9 +110,9 @@ double Pathfinder::GetTerrainCost(const brush_type brush)
 void Pathfinder::PaintTerrain(POINTS p)
 {
   //convert p to an index into the graph
-  int x = (int)((double)(p.x)/m_dCellWidth);  
-  int y = (int)((double)(p.y)/m_dCellHeight); 
-  
+  int x = (int)((double)(p.x)/m_dCellWidth);
+  int y = (int)((double)(p.y)/m_dCellHeight);
+
   //make sure the values are legal
   if ( (x>m_iCellsX) || (y>(m_iCellsY-1)) ) return;
 
@@ -132,7 +133,7 @@ void Pathfinder::PaintTerrain(POINTS p)
     case target:
 
       m_iTargetCell = y*m_iCellsX+x; break;
-      
+
     }//end switch
   }
 
@@ -178,7 +179,7 @@ void Pathfinder::UpdateGraphFromBrush(int brush, int CellIndex)
     }
 
     //set the edge costs in the graph
-    WeightNavGraphNodeEdges(*m_pGraph, CellIndex, GetTerrainCost((brush_type)brush));                            
+    WeightNavGraphNodeEdges(*m_pGraph, CellIndex, GetTerrainCost((brush_type)brush));
   }
 }
 
@@ -197,7 +198,7 @@ void Pathfinder::UpdateAlgorithm()
     CreatePathDFS(); break;
 
   case search_bfs:
-    
+
     CreatePathBFS(); break;
 
   case search_dijkstra:
@@ -205,7 +206,7 @@ void Pathfinder::UpdateAlgorithm()
     CreatePathDijkstra(); break;
 
   case search_astar:
-    
+
     CreatePathAStar(); break;
 
   default: break;
@@ -232,7 +233,7 @@ void Pathfinder::CreatePathDFS()
   //do the search
   Graph_SearchDFS<NavGraph> DFS(*m_pGraph, m_iSourceCell, m_iTargetCell);
 
-  //record the time taken  
+  //record the time taken
   m_dTimeTaken = timer.TimeElapsed();
 
   //now grab the path (if one has been found)
@@ -267,7 +268,7 @@ void Pathfinder::CreatePathBFS()
   //do the search
   Graph_SearchBFS<NavGraph> BFS(*m_pGraph, m_iSourceCell, m_iTargetCell);
 
-    //record the time taken  
+    //record the time taken
   m_dTimeTaken = timer.TimeElapsed();
 
   //now grab the path (if one has been found)
@@ -292,10 +293,10 @@ void Pathfinder::CreatePathDijkstra()
 
   //create and start a timer
   PrecisionTimer timer; timer.Start();
-    
+
   Graph_SearchDijkstra<NavGraph> djk(*m_pGraph, m_iSourceCell, m_iTargetCell);
 
-  //record the time taken  
+  //record the time taken
   m_dTimeTaken = timer.TimeElapsed();
 
   m_Path = djk.GetPathToTarget();
@@ -311,18 +312,18 @@ void Pathfinder::CreatePathAStar()
 {
   //set current algorithm
   m_CurrentAlgorithm = search_astar;
-      
+
   //create and start a timer
   PrecisionTimer timer; timer.Start();
-  
-  //create a couple of typedefs so the code will sit comfortably on the page   
+
+  //create a couple of typedefs so the code will sit comfortably on the page
   typedef Graph_SearchAStar<NavGraph, Heuristic_Euclid> AStarSearch;
 
   //create an instance of the A* search using the Euclidean heuristic
   AStarSearch AStar(*m_pGraph, m_iSourceCell, m_iTargetCell);
-  
 
-  //record the time taken  
+
+  //record the time taken
   m_dTimeTaken = timer.TimeElapsed();
 
   m_Path = AStar.GetPathToTarget();
@@ -382,7 +383,7 @@ void Pathfinder::Load( char* FileName)
   for (int t=0; t<m_iCellsX*m_iCellsY; ++t)
   {
     load >> terrain;
-    
+
     if (terrain == source)
     {
       m_iSourceCell = t;
@@ -423,7 +424,7 @@ std::string Pathfinder::GetNameOfCurrentSearchAlgorithm()const
 void Pathfinder::Render()
 {
   gdi->TransparentText();
-  
+
   //render all the cells
   for (int nd=0; nd<m_pGraph->NumNodes(); ++nd)
   {
@@ -445,12 +446,12 @@ void Pathfinder::Render()
       gdi->BlackBrush();
       if (!m_bShowTiles)gdi->BlackPen();
       break;
-      
+
     case 2:
       gdi->LightBlueBrush();
       if (!m_bShowTiles)gdi->LightBluePen();
       break;
-      
+
     case 3:
       gdi->BrownBrush();
       if (!m_bShowTiles)gdi->BrownPen();
@@ -460,7 +461,7 @@ void Pathfinder::Render()
       gdi->WhiteBrush();
       if (!m_bShowTiles)gdi->WhitePen();
       break;
-      
+
     }//end switch
 
 
@@ -475,8 +476,8 @@ void Pathfinder::Render()
       gdi->GreenBrush();
       if (!m_bShowTiles)gdi->GreenPen();
     }
-   
-    gdi->Rect(left, top, right, bottom);  
+
+    gdi->Rect(left, top, right, bottom);
 
     if (nd == m_iTargetCell)
     {
@@ -497,7 +498,7 @@ void Pathfinder::Render()
     gdi->DrawDot(right-1, top, RGB(0,0,0));
     gdi->DrawDot(left, bottom-1, RGB(0,0,0));
     gdi->DrawDot(right-1, bottom-1, RGB(0,0,0));
-  }  
+  }
   //draw the graph nodes and edges if rqd
   if (m_bShowGraph)
   {
@@ -508,7 +509,7 @@ void Pathfinder::Render()
   gdi->RedPen();
 
   for (unsigned int e=0; e<m_SubTree.size(); ++e)
-  {   
+  {
     if (m_SubTree[e])
     {
       Vector2D from = m_pGraph->GetNode(m_SubTree[e]->From()).Pos();
@@ -518,7 +519,7 @@ void Pathfinder::Render()
     }
   }
 
-  //draw the path (if any)  
+  //draw the path (if any)
   if (m_Path.size() > 0)
   {
     gdi->ThickBluePen();
@@ -531,13 +532,13 @@ void Pathfinder::Render()
       gdi->Line(m_pGraph->GetNode(*it).Pos(), m_pGraph->GetNode(*nxt).Pos());
     }
   }
-  
+
   if (m_dTimeTaken)
   {
     //draw time taken to complete algorithm
     string time = ttos(m_dTimeTaken, 8);
     string s = "Time Elapsed for " + GetNameOfCurrentSearchAlgorithm() + " is " + time;
-    gdi->TextAtPos(1,m_icyClient + 3,s); 
+    gdi->TextAtPos(1,m_icyClient + 3,s);
   }
 
   //display the total path cost if appropriate

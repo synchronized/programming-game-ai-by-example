@@ -19,12 +19,12 @@
 #include <list>
 
 
-#include "2D/Vector2d.h"
-#include "Graph/SparseGraph.h"
-#include "Graph/GraphAlgorithms.h"
-#include "misc/utils.h"
+#include "2d/Vector2D.h"
+#include "graph/SparseGraph.h"
+#include "graph/GraphAlgorithms.h"
 #include "graph/GraphEdgeTypes.h"
 #include "graph/GraphNodeTypes.h"
+#include "misc/Utils.h"
 
 
 
@@ -41,7 +41,7 @@ public:
     source   = 4,
     target   = 5
   };
-      
+
   enum algorithm_type
   {
     non,
@@ -52,7 +52,7 @@ public:
   };
 
 private:
-  
+
   //the terrain type of each cell
   std::vector<int>              m_TerrainType;
 
@@ -63,8 +63,8 @@ private:
   typedef SparseGraph<NavGraphNode<void*>, GraphEdge> NavGraph;
 
   NavGraph*                     m_pGraph;
-  
-  //this vector of edges is used to store any subtree returned from 
+
+  //this vector of edges is used to store any subtree returned from
   //any of the graph algorithms (such as an SPT)
   std::vector<const GraphEdge*> m_SubTree;
 
@@ -106,13 +106,13 @@ private:
   //holds the time taken for the most currently used algorithm to
   //complete
   double                        m_dTimeTaken;
-  
+
   //this calls the appropriate algorithm
   void  UpdateAlgorithm();
 
   //helper function for PaintTerrain (see below)
   void  UpdateGraphFromBrush(int brush, int CellIndex);
- 
+
  std::string GetNameOfCurrentSearchAlgorithm()const;
 
 public:
@@ -141,7 +141,7 @@ public:
 
   void Render();
 
-  //this will paint whatever cell the cursor is currently over in the 
+  //this will paint whatever cell the cursor is currently over in the
   //currently selected terrain brush
   void PaintTerrain(POINTS p);
 
