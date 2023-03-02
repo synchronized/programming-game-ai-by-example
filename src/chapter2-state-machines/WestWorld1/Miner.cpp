@@ -33,26 +33,18 @@ void Miner::ChangeState(State* pNewState) {
 
 //-----------------------------------------------------------------------------
 void Miner::AddToGoldCarried(const int val) {
-    m_iGoldCarried += val;
-
-    if (m_iGoldCarried < 0) m_iGoldCarried = 0;
+    m_iGoldCarried = std::max(0, m_iGoldCarried+val);
 }
 
 
 //-----------------------------------------------------------------------------
 void Miner::AddToWealth(const int val) {
-    m_iMoneyInBank += val;
-
-    if (m_iMoneyInBank < 0) m_iMoneyInBank = 0;
+    m_iMoneyInBank = std::max(0, m_iMoneyInBank+val);
 }
 
 
 //-----------------------------------------------------------------------------
-bool Miner::Thirsty()const {
-    if (m_iThirst >= ThirstLevel){return true;}
-    return false;
-}
-
+bool Miner::Thirsty()const { return (m_iThirst >= ThirstLevel); }
 
 //-----------------------------------------------------------------------------
 void Miner::Update() {
@@ -65,13 +57,6 @@ void Miner::Update() {
 
 
 //-----------------------------------------------------------------------------
-bool Miner::Fatigued()const {
-    if (m_iFatigue > TirednessThreshold)
-    {
-        return true;
-    }
-
-    return false;
-}
+bool Miner::Fatigued()const {return (m_iFatigue > TirednessThreshold); }
 
 }

@@ -3,12 +3,11 @@
 
 namespace WestWorld {
 
-enum location_type
-{
-  shack,
-  goldmine,
-  bank,
-  saloon
+enum location_type {
+    shack,
+    goldmine,
+    bank,
+    saloon
 };
 
 }
