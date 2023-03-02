@@ -9,7 +9,7 @@
 //-----------------------------------------------------------------------------
 
 #include "2d/Vector2D.h"
-#include "2d/Wall2d.h"
+#include "2d/Wall2D.h"
 
 
 //----------------------- doWallsObstructLineSegment --------------------------
@@ -24,7 +24,7 @@ inline bool doWallsObstructLineSegment(Vector2D from,
                                        const ContWall& walls)
 {
     //test against the walls
-    ContWall::const_iterator curWall = walls.begin();
+    typename ContWall::const_iterator curWall = walls.begin();
 
     for (curWall; curWall != walls.end(); ++curWall) {
         //do a line segment intersection test
@@ -116,7 +116,7 @@ inline bool FindClosestPointOfIntersectionWithWalls(Vector2D        A,
 template <class ContWall>
 inline bool doWallsIntersectCircle(const ContWall& walls, Vector2D p, double r) {
     //test against the walls
-    ContWall::const_iterator curWall = walls.begin();
+    typename ContWall::const_iterator curWall = walls.begin();
 
     for (curWall; curWall != walls.end(); ++curWall) {
         //do a line segment intersection test

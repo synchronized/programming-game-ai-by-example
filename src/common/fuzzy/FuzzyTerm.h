@@ -10,8 +10,7 @@
 //          used as terms in a fuzzy if-then rule base.
 //-----------------------------------------------------------------------------
 
-class FuzzyTerm
-{
+class FuzzyTerm {
   public:
 
     virtual ~FuzzyTerm(){}

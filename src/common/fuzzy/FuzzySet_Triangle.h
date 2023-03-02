@@ -15,8 +15,7 @@
 
 
 
-class FuzzySet_Triangle : public FuzzySet
-{
+class FuzzySet_Triangle : public FuzzySet {
   private:
 
     //the values that define the shape of this FLV

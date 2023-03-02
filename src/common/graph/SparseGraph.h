@@ -10,12 +10,12 @@
 //  Author: Mat Buckland (fup@ai-junkie.com)
 //
 //------------------------------------------------------------------------
-#include <vector>
-#include <list>
 #include <cassert>
-#include <string>
 #include <iostream>
-
+#include <list>
+#include <string>
+#include <vector>
+#include <fstream>
 
 #include "2d/Vector2D.h"
 #include "misc/Utils.h"
@@ -729,8 +729,7 @@ bool SparseGraph<node_type, edge_type>::Save(const char* FileName)const
     //open the file and make sure it's valid
     std::ofstream out(FileName);
 
-    if (!out)
-    {
+    if (!out) {
         throw std::runtime_error("Cannot open file: " + std::string(FileName));
         return false;
     }

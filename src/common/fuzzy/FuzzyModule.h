@@ -85,8 +85,7 @@ class FuzzyModule
 //  this method calls the Fuzzify method of the variable with the same name
 //  as the key
 //-----------------------------------------------------------------------------
-inline void FuzzyModule::Fuzzify(const std::string& NameOfFLV, double val)
-{
+inline void FuzzyModule::Fuzzify(const std::string& NameOfFLV, double val) {
     //first make sure the key exists
     assert ( (m_Variables.find(NameOfFLV) != m_Variables.end()) &&
              "<FuzzyModule::Fuzzify>:key not found");
@@ -100,8 +99,7 @@ inline void FuzzyModule::Fuzzify(const std::string& NameOfFLV, double val)
 //  crisp value
 //-----------------------------------------------------------------------------
 inline double
-FuzzyModule::DeFuzzify(const std::string& NameOfFLV, DefuzzifyMethod method)
-{
+FuzzyModule::DeFuzzify(const std::string& NameOfFLV, DefuzzifyMethod method) {
     //first make sure the key exists
     assert ( (m_Variables.find(NameOfFLV) != m_Variables.end()) &&
              "<FuzzyModule::DeFuzzifyMaxAv>:key not found");
@@ -111,14 +109,12 @@ FuzzyModule::DeFuzzify(const std::string& NameOfFLV, DefuzzifyMethod method)
 
     //process the rules
     std::vector<FuzzyRule*>::iterator curRule = m_Rules.begin();
-    for (curRule; curRule != m_Rules.end(); ++curRule)
-    {
+    for (; curRule != m_Rules.end(); ++curRule) {
         (*curRule)->Calculate();
     }
 
     //now defuzzify the resultant conclusion using the specified method
-    switch (method)
-    {
+    switch (method) {
         case centroid:
 
             return m_Variables[NameOfFLV]->DeFuzzifyCentroid(NumSamples);
@@ -141,11 +137,9 @@ FuzzyModule::DeFuzzify(const std::string& NameOfFLV, DefuzzifyMethod method)
 //
 //  zeros the DOMs of the consequents of each rule
 //-----------------------------------------------------------------------------
-inline void FuzzyModule::SetConfidencesOfConsequentsToZero()
-{
+inline void FuzzyModule::SetConfidencesOfConsequentsToZero() {
     std::vector<FuzzyRule*>::iterator curRule = m_Rules.begin();
-    for (curRule; curRule != m_Rules.end(); ++curRule)
-    {
+    for (; curRule != m_Rules.end(); ++curRule) {
         (*curRule)->SetConfidenceOfConsequentToZero();
     }
 }

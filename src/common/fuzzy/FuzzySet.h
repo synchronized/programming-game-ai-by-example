@@ -12,8 +12,7 @@
 #include <cassert>
 
 
-class FuzzySet
-{
+class FuzzySet {
   protected:
 
     //this will hold the degree of membership of a given value in this set

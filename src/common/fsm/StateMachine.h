@@ -51,8 +51,7 @@ class StateMachine
     void SetPreviousState(State<entity_type>* s){m_pPreviousState = s;}
 
     //call this to update the FSM
-    void  Update()const
-    {
+    void  Update()const {
         //if a global state exists, call its execute method, else do nothing
         if(m_pGlobalState)   m_pGlobalState->Execute(m_pOwner);
 
@@ -60,8 +59,7 @@ class StateMachine
         if (m_pCurrentState) m_pCurrentState->Execute(m_pOwner);
     }
 
-    bool  HandleMessage(const Telegram& msg)const
-    {
+    bool  HandleMessage(const Telegram& msg)const {
         //first see if the current state is valid and that it can handle
         //the message
         if (m_pCurrentState && m_pCurrentState->OnMessage(m_pOwner, msg))

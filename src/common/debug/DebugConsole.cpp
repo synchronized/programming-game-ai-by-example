@@ -93,8 +93,7 @@ LRESULT CALLBACK DebugConsole::DebugWindowProc(HWND hwnd,
             // Save the position for comparison later on
             iVertPos = si.nPos ;
 
-            switch (LOWORD (wparam))
-            {
+            switch (LOWORD (wparam)) {
                 case SB_TOP:
                     si.nPos = si.nMin ;
                     break ;
@@ -134,8 +133,7 @@ LRESULT CALLBACK DebugConsole::DebugWindowProc(HWND hwnd,
             GetScrollInfo (hwnd, SB_VERT, &si) ;
 
             // If the position has changed, scroll the window and update it
-            if (si.nPos != iVertPos)
-            {
+            if (si.nPos != iVertPos) {
                 ScrollWindow (hwnd, 0, cyChar * (iVertPos - si.nPos), NULL, NULL) ;
                 UpdateWindow (hwnd) ;
                 DrawWindow();
@@ -174,8 +172,7 @@ LRESULT CALLBACK DebugConsole::DebugWindowProc(HWND hwnd,
                 SetBkMode(ps.hdc, TRANSPARENT);
                 SetTextColor(ps.hdc, RGB(255,255,255));
 
-                if (m_Buffer.size() > 1)
-                {
+                if (m_Buffer.size() > 1) {
 
                     // Get vertical scroll bar position
                     si.cbSize = sizeof (si) ;
@@ -188,8 +185,7 @@ LRESULT CALLBACK DebugConsole::DebugWindowProc(HWND hwnd,
 
                     int StartIndex = 0;
 
-                    if (iVertPos > PageSize)
-                    {
+                    if (iVertPos > PageSize) {
                         StartIndex = iVertPos - PageSize;
                     }
 
@@ -198,8 +194,7 @@ LRESULT CALLBACK DebugConsole::DebugWindowProc(HWND hwnd,
 
                     int line=0;
 
-                    for (beg; (beg !=end) && (beg != m_Buffer.end()); ++beg)
-                    {
+                    for (; (beg !=end) && (beg != m_Buffer.end()); ++beg) {
                         TextOut(ps.hdc, 0, cyChar*line++, (*beg).c_str(), (*beg).size());
                     }
                 }
@@ -325,10 +320,7 @@ void DebugConsole::WriteAndResetBuffer() {
     m_iPosTop    = 0;
     m_bFlushed   = true;
 
-    //write out the contents of the buffer to a file
-    std::vector<std::string>::iterator it = m_Buffer.begin();
-
-    for (it; it != m_Buffer.end(); ++it) {
+    for (auto it = m_Buffer.begin(); it != m_Buffer.end(); ++it) {
         m_LogOut << *it << std::endl;
     }
 

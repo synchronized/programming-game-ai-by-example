@@ -12,11 +12,8 @@
 
 //------------------------------ dtor -----------------------------------------
 //-----------------------------------------------------------------------------
-FuzzyVariable::~FuzzyVariable()
-{
-    MemberSets::iterator it;
-    for (it = m_MemberSets.begin(); it != m_MemberSets.end(); ++it)
-    {
+FuzzyVariable::~FuzzyVariable() {
+    for (auto it = m_MemberSets.begin(); it != m_MemberSets.end(); ++it) {
         delete it->second;
     }
 }
@@ -26,16 +23,14 @@ FuzzyVariable::~FuzzyVariable()
 //  takes a crisp value and calculates its degree of membership for each set
 //  in the variable.
 //-----------------------------------------------------------------------------
-void FuzzyVariable::Fuzzify(double val)
-{
+void FuzzyVariable::Fuzzify(double val) {
     //make sure the value is within the bounds of this variable
     assert ( (val >= m_dMinRange) && (val <= m_dMaxRange) &&
              "<FuzzyVariable::Fuzzify>: value out of range");
 
     //for each set in the flv calculate the DOM for the given value
     MemberSets::const_iterator curSet;
-    for (curSet = m_MemberSets.begin(); curSet != m_MemberSets.end(); ++curSet)
-    {
+    for (curSet = m_MemberSets.begin(); curSet != m_MemberSets.end(); ++curSet) {
         curSet->second->SetDOM(curSet->second->CalculateDOM(val));
     }
 }
@@ -47,14 +42,12 @@ void FuzzyVariable::Fuzzify(double val)
 //
 // OUTPUT = sum (maxima * DOM) / sum (DOMs)
 //-----------------------------------------------------------------------------
-double FuzzyVariable::DeFuzzifyMaxAv()const
-{
+double FuzzyVariable::DeFuzzifyMaxAv()const {
     double bottom = 0.0;
     double top    = 0.0;
 
     MemberSets::const_iterator curSet;
-    for (curSet = m_MemberSets.begin(); curSet != m_MemberSets.end(); ++curSet)
-    {
+    for (curSet = m_MemberSets.begin(); curSet != m_MemberSets.end(); ++curSet) {
         bottom += curSet->second->GetDOM();
 
         top += curSet->second->GetRepresentativeVal() * curSet->second->GetDOM();
@@ -70,8 +63,7 @@ double FuzzyVariable::DeFuzzifyMaxAv()const
 //
 //  defuzzify the variable using the centroid method
 //-----------------------------------------------------------------------------
-double FuzzyVariable::DeFuzzifyCentroid(int NumSamples)const
-{
+double FuzzyVariable::DeFuzzifyCentroid(int NumSamples)const {
     //calculate the step size
     double StepSize = (m_dMaxRange - m_dMinRange)/(double)NumSamples;
 
@@ -88,14 +80,12 @@ double FuzzyVariable::DeFuzzifyCentroid(int NumSamples)const
     //in addition the moment of each slice is calculated and summed. Dividing
     //the total area by the sum of the moments gives the centroid. (Just like
     //calculating the center of mass of an object)
-    for (int samp=1; samp<=NumSamples; ++samp)
-    {
+    for (int samp=1; samp<=NumSamples; ++samp) {
         //for each set get the contribution to the area. This is the lower of the
         //value returned from CalculateDOM or the actual DOM of the fuzzified
         //value itself
         MemberSets::const_iterator curSet = m_MemberSets.begin();
-        for (curSet; curSet != m_MemberSets.end(); ++curSet)
-        {
+        for (; curSet != m_MemberSets.end(); ++curSet) {
             double contribution =
                     MinOf(curSet->second->CalculateDOM(m_dMinRange + samp * StepSize),
                           curSet->second->GetDOM());
@@ -199,8 +189,7 @@ void FuzzyVariable::AdjustRangeToFit(double minBound, double maxBound)
 std::ostream& FuzzyVariable::WriteDOMs(std::ostream& os)
 {
     MemberSets::iterator it;
-    for (it = m_MemberSets.begin(); it != m_MemberSets.end(); ++it)
-    {
+    for (it = m_MemberSets.begin(); it != m_MemberSets.end(); ++it) {
 
         os << "\n" << it->first << " is " << it->second->GetDOM();
     }

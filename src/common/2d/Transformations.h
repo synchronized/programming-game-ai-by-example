@@ -14,7 +14,6 @@
 
 #include "Vector2D.h"
 #include "C2DMatrix.h"
-#include "Transformations.h"
 
 //--------------------------- WorldTransform -----------------------------
 //

@@ -19,8 +19,7 @@
 //  a fuzzy AND operator class
 //
 ///////////////////////////////////////////////////////////////////////////////
-class FzAND : public FuzzyTerm
-{
+class FzAND : public FuzzyTerm {
   private:
 
     //an instance of this class may AND together up to 4 terms
@@ -55,8 +54,7 @@ class FzAND : public FuzzyTerm
 //  a fuzzy OR operator class
 //
 ///////////////////////////////////////////////////////////////////////////////
-class FzOR : public FuzzyTerm
-{
+class FzOR : public FuzzyTerm {
   private:
 
     //an instance of this class may AND together up to 4 terms

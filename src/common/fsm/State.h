@@ -12,8 +12,7 @@
 struct Telegram;
 
 template <class entity_type>
-class State
-{
+class State {
   public:
 
     virtual ~State(){}

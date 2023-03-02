@@ -9,7 +9,8 @@
 //  Desc:   Base composite goal class
 //-----------------------------------------------------------------------------
 #include <list>
-#include "Goal.h"
+
+#include "goals/Goal.h"
 
 
 template <class entity_type>
@@ -77,7 +78,7 @@ class Goal_Composite : public Goal<entity_type>
 template <class entity_type>
 void Goal_Composite<entity_type>::RemoveAllSubgoals()
 {
-    for (SubgoalList::iterator it = m_SubGoals.begin();
+    for (auto it = m_SubGoals.begin();
          it != m_SubGoals.end();
          ++it)
     {
@@ -96,8 +97,7 @@ void Goal_Composite<entity_type>::RemoveAllSubgoals()
 //  subgoal list. It then processes the next goal in the list (if there is one)
 //-----------------------------------------------------------------------------
 template <class entity_type>
-int Goal_Composite<entity_type>::ProcessSubgoals()
-{
+int Goal_Composite<entity_type>::ProcessSubgoals() {
     //remove all completed and failed goals from the front of the subgoal list
     while (!m_SubGoals.empty() &&
            (m_SubGoals.front()->isComplete() || m_SubGoals.front()->hasFailed()))
@@ -108,8 +108,7 @@ int Goal_Composite<entity_type>::ProcessSubgoals()
     }
 
     //if any subgoals remain, process the one at the front of the list
-    if (!m_SubGoals.empty())
-    {
+    if (!m_SubGoals.empty()) {
         //grab the status of the front-most subgoal
         int StatusOfSubGoals = m_SubGoals.front()->Process();
 
@@ -117,9 +116,8 @@ int Goal_Composite<entity_type>::ProcessSubgoals()
         //reports 'completed' *and* the subgoal list contains additional goals.When
         //this is the case, to ensure the parent keeps processing its subgoal list
         //we must return the 'active' status.
-        if (StatusOfSubGoals == completed && m_SubGoals.size() > 1)
-        {
-            return active;
+        if (StatusOfSubGoals == Goal<entity_type>::completed && m_SubGoals.size() > 1) {
+            return Goal<entity_type>::active;
         }
 
         return StatusOfSubGoals;
@@ -128,7 +126,7 @@ int Goal_Composite<entity_type>::ProcessSubgoals()
     //no more subgoals to process - return 'completed'
     else
     {
-        return completed;
+        return Goal<entity_type>::completed;
     }
 }
 
@@ -147,10 +145,8 @@ void Goal_Composite<entity_type>::AddSubgoal(Goal<entity_type>* g)
 //  passes the message to the goal at the front of the queue
 //-----------------------------------------------------------------------------
 template <class entity_type>
-bool Goal_Composite<entity_type>::ForwardMessageToFrontMostSubgoal(const Telegram& msg)
-{
-    if (!m_SubGoals.empty())
-    {
+bool Goal_Composite<entity_type>::ForwardMessageToFrontMostSubgoal(const Telegram& msg) {
+    if (!m_SubGoals.empty()) {
         return m_SubGoals.front()->HandleMessage(msg);
     }
 
@@ -161,16 +157,13 @@ bool Goal_Composite<entity_type>::ForwardMessageToFrontMostSubgoal(const Telegra
 
 //-------------------------- RenderAtPos --------------------------------------
 template <class entity_type>
-void  Goal_Composite<entity_type>::RenderAtPos(Vector2D& pos, TypeToString* tts)const
-{
+void  Goal_Composite<entity_type>::RenderAtPos(Vector2D& pos, TypeToString* tts)const {
     Goal<entity_type>::RenderAtPos(pos, tts);
 
     pos.x += 10;
 
     gdi->TransparentText();
-    SubgoalList::const_reverse_iterator it;
-    for (it=m_SubGoals.rbegin(); it != m_SubGoals.rend(); ++it)
-    {
+    for (auto it=m_SubGoals.rbegin(); it != m_SubGoals.rend(); ++it) {
         (*it)->RenderAtPos(pos, tts);
     }
 
@@ -178,10 +171,8 @@ void  Goal_Composite<entity_type>::RenderAtPos(Vector2D& pos, TypeToString* tts)
 }
 
 template <class entity_type>
-void  Goal_Composite<entity_type>::Render()
-{
-    if (!m_SubGoals.empty())
-    {
+void  Goal_Composite<entity_type>::Render() {
+    if (!m_SubGoals.empty()) {
         m_SubGoals.front()->Render();
     }
 }

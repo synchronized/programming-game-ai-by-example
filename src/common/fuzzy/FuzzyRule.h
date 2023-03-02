@@ -18,8 +18,7 @@
 #include "misc/Utils.h"
 
 
-class FuzzyRule
-{
+class FuzzyRule {
   private:
 
     //antecedent (usually a composite of several fuzzy sets and operators)
@@ -46,8 +45,7 @@ class FuzzyRule
 
     //this method updates the DOM (the confidence) of the consequent term with
     //the DOM of the antecedent term.
-    void Calculate()
-    {
+    void Calculate() {
         m_pConsequence->ORwithDOM(m_pAntecedent->GetDOM());
     }
 };

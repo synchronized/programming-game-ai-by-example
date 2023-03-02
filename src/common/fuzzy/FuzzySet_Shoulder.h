@@ -11,9 +11,7 @@
 //          right displacement.
 //-----------------------------------------------------------------------------
 #include "fuzzy/FuzzySet.h"
-#include "utils.h"
-
-
+#include "misc/Utils.h"
 
 class FuzzySet_Triangle : public FuzzySet
 {
@@ -29,7 +27,7 @@ class FuzzySet_Triangle : public FuzzySet
     FuzzySet_Triangle(std::string name,
                       double mid,
                       double lft,
-                      double rgt):FuzzySet(name),
+                      double rgt):FuzzySet(mid),
                                   m_dMidPoint(mid),
                                   m_dLeftOffset(lft),
                                   m_dRightOffset(rgt)

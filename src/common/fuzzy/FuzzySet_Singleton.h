@@ -14,8 +14,7 @@
 
 
 
-class FuzzySet_Singleton : public FuzzySet
-{
+class FuzzySet_Singleton : public FuzzySet {
   private:
 
     //the values that define the shape of this FLV
