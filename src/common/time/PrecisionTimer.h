@@ -6,33 +6,30 @@
 //
 //  Author: Mat Buckland 2002
 //
-//  Desc: Windows timer class.
+//  Desc: c++ std::chrono timer
 //
 //        nb. this only uses the high performance timer. There is no
 //        support for ancient computers. I know, I know, I should add
 //        support, but hey, I have shares in AMD and Intel... Go upgrade ;o)
 //
 //-----------------------------------------------------------------------
-#include <windows.h>
 #include <cassert>
+#include <chrono>
 
 
 class PrecisionTimer
 {
 
   private:
+    //microsecond time_point
+    using Duration = std::chrono::duration<double>;
+    using TimePoint = std::chrono::time_point<std::chrono::steady_clock, Duration>;
 
-    LONGLONG  m_CurrentTime,
-        m_LastTime,
-        m_LastTimeInTimeElapsed,
-        m_NextTime,
-        m_StartTime,
-        m_FrameTime,
-        m_PerfCountFreq;
+    TimePoint m_CurrentTime, m_LastTime, m_LastTimeInTimeElapsed,
+        m_NextTime, m_StartTime;
+    Duration m_FrameTime;
 
-    double    m_TimeElapsed,
-        m_LastTimeElapsed,
-        m_TimeScale;
+    Duration m_TimeElapsed, m_LastTimeElapsed;
 
     double    m_NormalFPS;
     double    m_SlowFPS;
@@ -64,11 +61,10 @@ class PrecisionTimer
 
     inline double  TimeElapsed();
 
-    double  CurrentTime()
-    {
-        QueryPerformanceCounter( (LARGE_INTEGER*) &m_CurrentTime);
-
-        return (m_CurrentTime - m_StartTime) * m_TimeScale;
+    double  CurrentTime() {
+        m_CurrentTime = std::chrono::steady_clock::now();
+        Duration dura = (m_CurrentTime - m_StartTime);
+        return dura.count();
     }
 
     bool    Started()const{return m_bStarted;}
@@ -88,11 +84,10 @@ class PrecisionTimer
 inline bool PrecisionTimer::ReadyForNextFrame() {
     assert(m_NormalFPS && "PrecisionTimer::ReadyForNextFrame<No FPS set in timer>");
 
-    QueryPerformanceCounter( (LARGE_INTEGER*) &m_CurrentTime);
+    m_CurrentTime = std::chrono::steady_clock::now();
 
     if (m_CurrentTime > m_NextTime) {
-
-        m_TimeElapsed = (m_CurrentTime - m_LastTime) * m_TimeScale;
+        m_TimeElapsed = (m_CurrentTime - m_LastTime);
         m_LastTime    = m_CurrentTime;
 
         //update time to render next frame
@@ -111,9 +106,9 @@ inline bool PrecisionTimer::ReadyForNextFrame() {
 inline double PrecisionTimer::TimeElapsed() {
     m_LastTimeElapsed = m_TimeElapsed;
 
-    QueryPerformanceCounter( (LARGE_INTEGER*) &m_CurrentTime);
+    m_CurrentTime = std::chrono::steady_clock::now();
 
-    m_TimeElapsed = (m_CurrentTime - m_LastTimeInTimeElapsed) * m_TimeScale;
+    m_TimeElapsed = (m_CurrentTime - m_LastTimeInTimeElapsed);
 
     m_LastTimeInTimeElapsed    = m_CurrentTime;
 
@@ -121,14 +116,12 @@ inline double PrecisionTimer::TimeElapsed() {
 
     if (m_bSmoothUpdates) {
         if (m_TimeElapsed < (m_LastTimeElapsed * Smoothness)) {
-            return m_TimeElapsed;
-        }
-        else {
+            return m_TimeElapsed.count();
+        } else {
             return 0.0;
         }
-    }
-    else {
-        return m_TimeElapsed;
+    } else {
+        return m_TimeElapsed.count();
     }
 
 }
