@@ -1,14 +1,16 @@
 #include <fstream>
-#include <time.h>
+#include <ctime>
+#include <chrono>
+#include <thread>
 
 #include "Locations.h"
 #include "Miner.h"
 #include "MinersWife.h"
 #include "EntityManager.h"
 #include "MessageDispatcher.h"
-#include "misc/ConsoleUtils.h"
 #include "EntityNames.h"
 
+#include "misc/ConsoleUtils.h"
 
 std::ofstream os;
 
@@ -34,14 +36,14 @@ int main()
 
   //run Bob and Elsa through a few Update calls
   for (int i=0; i<30; ++i)
-  { 
+  {
     Bob->Update();
     Elsa->Update();
 
     //dispatch any delayed messages
     Dispatch->DispatchDelayedMessages();
 
-    Sleep(800);
+    std::this_thread::sleep_for(std::chrono::duration<int,std::milli>(800));
   }
 
   //tidy up
@@ -54,9 +56,3 @@ int main()
 
   return 0;
 }
-
-
-
-
-
-

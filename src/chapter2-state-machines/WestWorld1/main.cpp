@@ -1,5 +1,6 @@
 
-#include "windows.h"
+#include <thread>
+#include <chrono>
 #include "EntityNames.h"
 #include "Locations.h"
 #include "Miner.h"
@@ -13,7 +14,8 @@ int main() {
     for (int i=0; i<20; ++i) {
         miner.Update();
 
-        Sleep(800);
+        std::this_thread::sleep_for(
+            std::chrono::duration<int, std::milli>(800));
     }
 
     //wait for a keypress before exiting

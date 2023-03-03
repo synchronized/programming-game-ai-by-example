@@ -85,14 +85,12 @@ class PrecisionTimer
 //  FPS is set.
 //
 //----------------------------------------------------------------------------
-inline bool PrecisionTimer::ReadyForNextFrame()
-{
+inline bool PrecisionTimer::ReadyForNextFrame() {
     assert(m_NormalFPS && "PrecisionTimer::ReadyForNextFrame<No FPS set in timer>");
 
     QueryPerformanceCounter( (LARGE_INTEGER*) &m_CurrentTime);
 
-    if (m_CurrentTime > m_NextTime)
-    {
+    if (m_CurrentTime > m_NextTime) {
 
         m_TimeElapsed = (m_CurrentTime - m_LastTime) * m_TimeScale;
         m_LastTime    = m_CurrentTime;
@@ -110,8 +108,7 @@ inline bool PrecisionTimer::ReadyForNextFrame()
 //
 //  returns time elapsed since last call to this function.
 //-------------------------------------------------------------------------
-inline double PrecisionTimer::TimeElapsed()
-{
+inline double PrecisionTimer::TimeElapsed() {
     m_LastTimeElapsed = m_TimeElapsed;
 
     QueryPerformanceCounter( (LARGE_INTEGER*) &m_CurrentTime);
@@ -122,21 +119,15 @@ inline double PrecisionTimer::TimeElapsed()
 
     const double Smoothness = 5.0;
 
-    if (m_bSmoothUpdates)
-    {
-        if (m_TimeElapsed < (m_LastTimeElapsed * Smoothness))
-        {
+    if (m_bSmoothUpdates) {
+        if (m_TimeElapsed < (m_LastTimeElapsed * Smoothness)) {
             return m_TimeElapsed;
         }
-
-        else
-        {
+        else {
             return 0.0;
         }
     }
-
-    else
-    {
+    else {
         return m_TimeElapsed;
     }
 

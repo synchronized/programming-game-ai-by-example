@@ -12,7 +12,7 @@
 
 //this library must be included
 
-#include <windows.h>
+#include <chrono>
 
 #define Clock CrudeTimer::Instance()
 
@@ -22,10 +22,10 @@ class CrudeTimer
 
 
     //set to the time (in seconds) when class is instantiated
-    double m_dStartTime;
+    std::chrono::time_point<std::chrono::steady_clock, std::chrono::duration<double, std::milli>> m_dStartTime;
 
     //set the start time
-    CrudeTimer(){m_dStartTime = timeGetTime() * 0.001;}
+    CrudeTimer(){m_dStartTime = std::chrono::steady_clock::now();}
 
     //copy ctor and assignment should be private
     CrudeTimer(const CrudeTimer&);
@@ -36,8 +36,10 @@ class CrudeTimer
     static CrudeTimer* Instance();
 
     //returns how much time has elapsed since the timer was started
-    double GetCurrentTime(){return timeGetTime() * 0.001 - m_dStartTime;}
-
+    double GetCurrentTime(){
+      auto dura = std::chrono::steady_clock::now() - m_dStartTime;
+      return dura.count();
+    }
 };
 
 

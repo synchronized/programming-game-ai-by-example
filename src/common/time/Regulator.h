@@ -13,29 +13,30 @@
 //
 //------------------------------------------------------------------------
 #pragma comment(lib,"winmm.lib") //if you don't use MSVC make sure this library is included in your project
-#include "mmsystem.h"
+#include <chrono>
 
 #include "misc/Utils.h"
 
-#include <windows.h>
 
 class Regulator
 {
   private:
+    using TimePoint =
+        std::chrono::time_point<std::chrono::steady_clock,
+                                std::chrono::duration<double, std::milli>>;
 
-    //the time period between updates
+        // the time period between updates
     double m_dUpdatePeriod;
 
     //the next time the regulator allows code flow
-    DWORD m_dwNextUpdateTime;
-
+    TimePoint m_dwNextUpdateTime;
 
   public:
 
 
     Regulator(double NumUpdatesPerSecondRqd)
     {
-        m_dwNextUpdateTime = (DWORD)(timeGetTime()+RandFloat()*1000);
+        m_dwNextUpdateTime = std::chrono::steady_clock::now();
 
         if (NumUpdatesPerSecondRqd > 0)
         {
@@ -65,16 +66,16 @@ class Regulator
         //never allow the code to flow
         if (m_dUpdatePeriod < 0) return false;
 
-        DWORD CurrentTime = timeGetTime();
+        TimePoint CurrentTime = std::chrono::steady_clock::now();
 
         //the number of milliseconds the update period can vary per required
         //update-step. This is here to make sure any multiple clients of this class
         //have their updates spread evenly
         static const double UpdatePeriodVariator = 10.0;
 
-        if (CurrentTime >= m_dwNextUpdateTime)
-        {
-            m_dwNextUpdateTime = (DWORD)(CurrentTime + m_dUpdatePeriod + RandInRange(-UpdatePeriodVariator, UpdatePeriodVariator));
+        if (CurrentTime >= m_dwNextUpdateTime) {
+            auto floatVal = RandInRange(-UpdatePeriodVariator, UpdatePeriodVariator);
+            m_dwNextUpdateTime = CurrentTime + std::chrono::duration<double, std::milli>(m_dUpdatePeriod + floatVal);
 
             return true;
         }

@@ -1,11 +1,13 @@
+#include <chrono>
 #include <fstream>
+#include <thread>
+
 #include "Locations.h"
 #include "Miner.h"
 #include "MinersWife.h"
-#include "misc/ConsoleUtils.h"
 #include "EntityNames.h"
 
-
+#include "misc/ConsoleUtils.h"
 
 std::ofstream os;
 
@@ -24,11 +26,11 @@ int main()
 
   //run Bob and Elsa through a few Update calls
   for (int i=0; i<20; ++i)
-  { 
+  {
     Bob.Update();
     Elsa.Update();
 
-    Sleep(800);
+    std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(800));
   }
 
   //wait for a keypress before exiting
@@ -36,9 +38,3 @@ int main()
 
   return 0;
 }
-
-
-
-
-
-
