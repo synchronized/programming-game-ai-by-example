@@ -2,7 +2,7 @@
 
 ParamLoader* ParamLoader::Instance()
 {
-  static ParamLoader instance;
+    static ParamLoader instance;
 
-  return &instance;
+    return &instance;
 }

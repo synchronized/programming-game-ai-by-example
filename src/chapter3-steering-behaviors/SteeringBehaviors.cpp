@@ -24,8 +24,6 @@ using std::vector;
 //
 //------------------------------------------------------------------------
 SteeringBehavior::SteeringBehavior(Vehicle* agent):
-
-
         m_pVehicle(agent),
         m_iFlags(0),
         m_dDBoxLength(Prm.MinDetectionBoxLength),
@@ -49,28 +47,25 @@ SteeringBehavior::SteeringBehavior(Vehicle* agent):
         m_dWeightFlee(Prm.FleeWeight),
         m_dWeightArrive(Prm.ArriveWeight),
         m_dWeightPursuit(Prm.PursuitWeight),
-    m_dWeightOffsetPursuit(Prm.OffsetPursuitWeight),
-    m_dWeightInterpose(Prm.InterposeWeight),
-    m_dWeightHide(Prm.HideWeight),
-    m_dWeightEvade(Prm.EvadeWeight),
-    m_dWeightFollowPath(Prm.FollowPathWeight),
-    m_bCellSpaceOn(false),
-    m_SummingMethod(prioritized)
+        m_dWeightOffsetPursuit(Prm.OffsetPursuitWeight),
+        m_dWeightInterpose(Prm.InterposeWeight),
+        m_dWeightHide(Prm.HideWeight),
+        m_dWeightEvade(Prm.EvadeWeight),
+        m_dWeightFollowPath(Prm.FollowPathWeight),
+        m_bCellSpaceOn(false),
+        m_SummingMethod(prioritized)
+{
+    //stuff for the wander behavior
+    double theta = RandFloat() * TwoPi;
 
+    //create a vector to a target position on the wander circle
+    m_vWanderTarget = Vector2D(m_dWanderRadius * cos(theta),
+                               m_dWanderRadius * sin(theta));
 
-        {
-            //stuff for the wander behavior
-            double theta = RandFloat() * TwoPi;
-
-            //create a vector to a target position on the wander circle
-            m_vWanderTarget = Vector2D(m_dWanderRadius * cos(theta),
-                                       m_dWanderRadius * sin(theta));
-
-            //create a Path
-            m_pPath = new Path();
-            m_pPath->LoopOn();
-
-        }
+    //create a Path
+    m_pPath = new Path();
+    m_pPath->LoopOn();
+}
 
 //---------------------------------dtor ----------------------------------
 SteeringBehavior::~SteeringBehavior(){delete m_pPath;}
@@ -84,33 +79,27 @@ SteeringBehavior::~SteeringBehavior(){delete m_pPath;}
 //  calculates the accumulated steering force according to the method set
 //  in m_SummingMethod
 //------------------------------------------------------------------------
-Vector2D SteeringBehavior::Calculate()
-{
+Vector2D SteeringBehavior::Calculate() {
     //reset the steering force
     m_vSteeringForce.Zero();
 
     //use space partitioning to calculate the neighbours of this vehicle
     //if switched on. If not, use the standard tagging system
-    if (!isSpacePartitioningOn())
-    {
+    if (!isSpacePartitioningOn()) {
         //tag neighbors if any of the following 3 group behaviors are switched on
-        if (On(separation) || On(allignment) || On(cohesion))
-        {
+        if (On(separation) || On(allignment) || On(cohesion)) {
             m_pVehicle->World()->TagVehiclesWithinViewRange(m_pVehicle, m_dViewDistance);
         }
     }
-    else
-    {
+    else {
         //calculate neighbours in cell-space if any of the following 3 group
         //behaviors are switched on
-        if (On(separation) || On(allignment) || On(cohesion))
-        {
+        if (On(separation) || On(allignment) || On(cohesion)) {
             m_pVehicle->World()->CellSpace()->CalculateNeighbors(m_pVehicle->Pos(), m_dViewDistance);
         }
     }
 
-    switch (m_SummingMethod)
-    {
+    switch (m_SummingMethod) {
         case weighted_average:
 
             m_vSteeringForce = CalculateWeightedSum(); break;
@@ -134,16 +123,14 @@ Vector2D SteeringBehavior::Calculate()
 //
 //  returns the forward oomponent of the steering force
 //------------------------------------------------------------------------
-double SteeringBehavior::ForwardComponent()
-{
+double SteeringBehavior::ForwardComponent() {
     return m_pVehicle->Heading().Dot(m_vSteeringForce);
 }
 
 //--------------------------- SideComponent ------------------------------
 //  returns the side component of the steering force
 //------------------------------------------------------------------------
-double SteeringBehavior::SideComponent()
-{
+double SteeringBehavior::SideComponent() {
     return m_pVehicle->Side().Dot(m_vSteeringForce);
 }
 
@@ -174,13 +161,10 @@ bool SteeringBehavior::AccumulateForce(Vector2D &RunningTot,
     //does not exceed the maximum force available to this vehicle, just
     //add together. Otherwise add as much of the ForceToAdd vector is
     //possible without going over the max.
-    if (MagnitudeToAdd < MagnitudeRemaining)
-    {
+    if (MagnitudeToAdd < MagnitudeRemaining) {
         RunningTot += ForceToAdd;
     }
-
-    else
-    {
+    else {
         //add it to the steering force
         RunningTot += (Vec2DNormalize(ForceToAdd) * MagnitudeRemaining);
     }

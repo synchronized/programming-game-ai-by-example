@@ -18,8 +18,7 @@ std::list<Vector2D> Path::CreateRandomPath(int   NumWaypoints,
 
     double spacing = TwoPi/(double)NumWaypoints;
 
-    for (int i=0; i<NumWaypoints; ++i)
-    {
+    for (int i=0; i<NumWaypoints; ++i) {
         double RadialDist = RandInRange(smaller*0.2f, smaller);
 
         Vector2D temp(RadialDist, 0.0f);
@@ -46,8 +45,7 @@ void Path::Render()const
 
     Vector2D wp = *it++;
 
-    while (it != m_WayPoints.end())
-    {
+    while (it != m_WayPoints.end()) {
         gdi->Line(wp, *it);
 
         wp = *it++;
